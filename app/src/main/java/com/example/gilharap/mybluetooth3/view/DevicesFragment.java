@@ -54,7 +54,7 @@ public class DevicesFragment extends Fragment {
 
         text.setText("aaa");
 
-        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getContext());
+        LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         recycler.setLayoutManager(linearLayoutManager);
         adapter = new PairedAdapter(namesList, new SelectListen());
         recycler.setAdapter(adapter);
