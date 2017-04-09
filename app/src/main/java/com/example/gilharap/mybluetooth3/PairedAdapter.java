@@ -1,6 +1,5 @@
 package com.example.gilharap.mybluetooth3;
 
-import android.bluetooth.BluetoothDevice;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,6 +7,9 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.util.List;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 
 /**
  * Created by Gil Harap on 03/04/2017.
@@ -22,12 +24,12 @@ public class PairedAdapter extends RecyclerView.Adapter<PairedAdapter.CustomView
     }
 
 
-    private List<String> devices;
-    private SelectListener listener;
+    private List<String> mDevices;
+    private SelectListener mListener;
 
-    public PairedAdapter(List<String> devices, SelectListener selectListener) {
-        this.devices = devices;
-        this.listener = selectListener;
+    public PairedAdapter(List<String> mDevices, SelectListener selectListener) {
+        this.mDevices = mDevices;
+        this.mListener = selectListener;
     }
 
     @Override
@@ -39,29 +41,29 @@ public class PairedAdapter extends RecyclerView.Adapter<PairedAdapter.CustomView
 
     @Override
     public void onBindViewHolder(CustomViewHolder holder, int position) {
-        final String device = devices.get(position);
-        holder.name.setText(device);
-        holder.pairedParent.setOnClickListener(new View.OnClickListener() {
+        final String device = mDevices.get(position);
+        holder.mName.setText(device);
+        holder.mConnect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                listener.onSelect(position);
+                mListener.onSelect(position);
             }
         });
     }
 
     @Override
     public int getItemCount() {
-        return devices.size();
+        return mDevices.size();
     }
 
     public class CustomViewHolder extends RecyclerView.ViewHolder {
-        protected View pairedParent;
-        protected TextView name;
+//        protected TextView name;
+        @BindView(R.id.name) TextView mName;
+        @BindView(R.id.connect) View mConnect;
 
         public CustomViewHolder(View view) {
             super(view);
-            this.name = (TextView)view.findViewById(R.id.name);
-            this.pairedParent = view.findViewById(R.id.pairedParent);
+            ButterKnife.bind(this, view);
         }
     }
 }

@@ -22,7 +22,7 @@ import butterknife.ButterKnife;
 
 public class DevicesFragment extends Fragment {
 
-    public static final String NAMES = "names";
+    public static final String NAMES = "mNames";
     private OnFragmentInteractionListener mListener;
 
     @BindView(R.id.devicesRecycler)
@@ -31,7 +31,8 @@ public class DevicesFragment extends Fragment {
     @BindView(R.id.text)
     TextView text;
 
-    private PairedAdapter adapter;
+    private PairedAdapter mAdapter;
+    private String[] mNames;
 
     public DevicesFragment() {
         // Required empty public constructor
@@ -43,21 +44,29 @@ public class DevicesFragment extends Fragment {
     }
 
     @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        if (getArguments() != null) {
+            mNames = getArguments().getStringArray(NAMES);
+        }
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_devices, container, false);
         ButterKnife.bind(this, view);
 
-        String[] names = getArguments().getStringArray(NAMES);
-        ArrayList<String> namesList = new ArrayList<>(Arrays.asList(names));
+
+        ArrayList<String> namesList = new ArrayList<>(Arrays.asList(mNames));
 
         text.setText("aaa");
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         recycler.setLayoutManager(linearLayoutManager);
-        adapter = new PairedAdapter(namesList, new SelectListen());
-        recycler.setAdapter(adapter);
+        mAdapter = new PairedAdapter(namesList, new SelectListen());
+        recycler.setAdapter(mAdapter);
 
         return view;
     }
@@ -88,7 +97,7 @@ public class DevicesFragment extends Fragment {
     private class SelectListen implements PairedAdapter.SelectListener {
         @Override
         public void onSelect(int position) {
-
+            mListener.onDeviceSelected(position);
         }
     }
 }

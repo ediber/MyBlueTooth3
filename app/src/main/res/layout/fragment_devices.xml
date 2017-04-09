@@ -9,7 +9,7 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="paired devices"
+        android:text="paired mDevices"
         android:id="@+id/text"/>
 
     <android.support.v7.widget.RecyclerView
