@@ -59,7 +59,7 @@ public class PairedAdapter extends RecyclerView.Adapter<PairedAdapter.CustomView
     public class CustomViewHolder extends RecyclerView.ViewHolder {
 //        protected TextView name;
         @BindView(R.id.name) TextView mName;
-        @BindView(R.id.connect) View mConnect;
+        @BindView(R.id.select) View mConnect;
 
         public CustomViewHolder(View view) {
             super(view);

@@ -1,19 +1,21 @@
 package com.example.gilharap.mybluetooth3.view;
 
 import android.content.Context;
-import android.databinding.DataBindingUtil;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.example.gilharap.mybluetooth3.R;
-import com.example.gilharap.mybluetooth3.databinding.FragmentConnectBinding;
-import com.example.gilharap.mybluetooth3.viewmodel.MainViewModel;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import butterknife.BindView;
@@ -31,7 +33,7 @@ public class ConnectFragment extends Fragment {
     @BindView(R.id.connectName)
     TextView mNameView;
 
-    @BindView(R.id.connect)
+    @BindView(R.id.select)
     View mConnect;
 
     @BindView(R.id.dissconect)
@@ -42,6 +44,12 @@ public class ConnectFragment extends Fragment {
 
     @BindView(R.id.stop)
     View mStop;
+
+    @BindView(R.id.level)
+    Spinner mSpinnerLevel;
+
+    @BindView(R.id.current)
+    Spinner mSpinnerCurrent;
 
 //    MainViewModel viewModel = new MainViewModel(getActivity());
 
@@ -74,6 +82,8 @@ public class ConnectFragment extends Fragment {
 
         mNameView.setText(mName);
 
+        setSpinners();
+
         mConnect.setOnClickListener((View v) -> {
             mListener.onConnect();
         });
@@ -83,11 +93,11 @@ public class ConnectFragment extends Fragment {
         });
 
         mStart.setOnClickListener((View v) -> {
-            mListener.onConnect();
+            mListener.onStartRequest(mSpinnerLevel.getSelectedItemPosition(), mSpinnerCurrent.getSelectedItemPosition());
         });
 
         mStop.setOnClickListener((View v) -> {
-            mListener.onConnect();
+            mListener.onStopRequest();
         });
 
         return view;
@@ -112,11 +122,49 @@ public class ConnectFragment extends Fragment {
         mListener = null;
     }
 
+    public void updateUI(String hex, String binary) {
+        for(int i=0; i < binary.length()/2; i++){
+            if(binary.charAt(i) == '0'){ // attached
+                mSpinnerLevel.getChildAt(i).setBackground(ContextCompat.getDrawable(getContext(), R.drawable.circle_green));
+//                Log.d(TAG, "0, green");
+            } else {
+                mSpinnerLevel.getChildAt(i).setBackground(ContextCompat.getDrawable(getContext(), R.drawable.circle_red));
+//                Log.d(TAG, "1, red");
+            }
+        }
+
+        int layoutIndex = 0;
+        for(int i = binary.length()/2; i < binary.length(); i++){
+            if(binary.charAt(i) == '0'){ // attached
+                mSpinnerCurrent.getChildAt(layoutIndex).setBackground(ContextCompat.getDrawable(getContext(), R.drawable.circle_green));
+//                Log.d(TAG, "0, green");
+            } else {
+                mSpinnerCurrent.getChildAt(layoutIndex).setBackground(ContextCompat.getDrawable(getContext(), R.drawable.circle_red));
+//                Log.d(TAG, "1, red");
+            }
+
+            layoutIndex++;
+        }
+    }
+
+    private void setSpinners() {
+        // set spinners
+        List<String> levelsLst = new ArrayList(Arrays.asList("P_95_N_5", "P_92_5_N_7_5", "P_90_N_10" ,"P_87_5_N_12_5", "P_85_N_15", "P_80_N_20", "P_75_N_25", "P_70_N_30"));
+        ArrayAdapter<String> levelArrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, levelsLst); //selected item will look like a spinner set from XML
+        levelArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mSpinnerLevel.setAdapter(levelArrayAdapter);
+
+        List currentLst = new ArrayList(Arrays.asList("CURRENT_6_NA", "CURRENT_24_NA", "CURRENT_6_UA", "CURRENT_24_UA"));
+        ArrayAdapter<String> currentArrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, currentLst); //selected item will look like a spinner set from XML
+        currentArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        mSpinnerCurrent.setAdapter(currentArrayAdapter);
+    }
+
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onConnect();
         void onDisConnect();
-        void onStartRequest();
+        void onStartRequest(int selectedItemPosition, int selectedItemPosition1);
         void onStopRequest();
     }
 

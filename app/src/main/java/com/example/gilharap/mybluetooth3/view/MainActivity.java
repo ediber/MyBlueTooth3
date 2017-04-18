@@ -1,10 +1,10 @@
 package com.example.gilharap.mybluetooth3.view;
 
 import android.content.Intent;
-import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.FrameLayout;
+import android.widget.Toast;
 
 import com.example.gilharap.mybluetooth3.FragmentSwapper;
 import com.example.gilharap.mybluetooth3.R;
@@ -22,6 +22,7 @@ public class MainActivity extends AppCompatActivity implements DevicesFragment.O
 
     private FragmentSwapper mFragmentSwapper;
     private MainViewModel mMainViewModel;
+    private ConnectFragment mConnectFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements DevicesFragment.O
         mMainViewModel = new MainViewModel(this, new viewModelListen());
 
         mFragmentSwapper = FragmentSwapper.getInstance(getSupportFragmentManager());
+        mConnectFragment = ConnectFragment.newInstance();
 
 
         mMainViewModel.onCreate();
@@ -49,17 +51,17 @@ public class MainActivity extends AppCompatActivity implements DevicesFragment.O
 
     @Override
     public void onDisConnect() {
-
+        mMainViewModel.disConnect();
     }
 
     @Override
-    public void onStartRequest() {
-
+    public void onStartRequest(int level, int current) {
+        mMainViewModel.start(level, current);
     }
 
     @Override
     public void onStopRequest() {
-
+        mMainViewModel.stop();
     }
 
 
@@ -79,6 +81,36 @@ public class MainActivity extends AppCompatActivity implements DevicesFragment.O
             bundle.putString(ConnectFragment.NAME1, deviceName);
             mFragmentSwapper.swapToFragment(ConnectFragment.class, bundle, R.id.frame, true, true);
         }
+
+        @Override
+        public void onConnectionSuccess() {
+            String message = "connection sucess";
+            ToastOnUIThread(message);
+        }
+
+        @Override
+        public void onConnectionError() {
+            ToastOnUIThread("connection failed");
+        }
+
+        @Override
+        public void onDisconnectFailed() {
+            ToastOnUIThread("diconnection failed");
+        }
+
+        @Override
+        public void onUpdateUIFromMessage(String hex, String binary) {
+            MainActivity.this.runOnUiThread(new Runnable() {
+                public void run() {
+                    mConnectFragment.updateUI(hex, binary);
+                }
+            });
+
+        }
+    }
+
+    private void ToastOnUIThread(String message) {
+        MainActivity.this.runOnUiThread(() -> Toast.makeText(MainActivity.this, message, Toast.LENGTH_LONG).show());
     }
 
     @Override

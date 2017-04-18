@@ -8,6 +8,12 @@ import java.util.ArrayList;
 
 public class ConvertUtil {
 
+    private ArrayList<String> mBinaries;
+
+    public ConvertUtil() {
+        generateTableOfAllBinaries();
+    }
+
     public static Byte intToHexByte(int num) {
         String ans =  Integer.toHexString(num);
         return Byte.parseByte(ans);
@@ -41,5 +47,24 @@ public class ConvertUtil {
             bytes[i++] = b.byteValue();
         }
         return bytes;
+    }
+
+
+    private void generateTableOfAllBinaries() {
+        mBinaries = new ArrayList<>();
+        for (int i = 0; i < 256; i++) {
+            String binary = ConvertUtil.intToBinaryString(i);
+            mBinaries.add(binary);
+        }
+    }
+
+    public String byteToBinary(byte[] buffer, String payload) {
+        // payload to binary
+        for(int i=5; i<buffer.length-2; i++){
+            int binaryindex = buffer[i] & 0xFF;
+            String binaryStr = mBinaries.get(binaryindex);
+            payload = payload + binaryStr;
+        }
+        return payload;
     }
 }

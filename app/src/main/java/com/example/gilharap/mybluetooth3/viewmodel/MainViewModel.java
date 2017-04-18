@@ -1,18 +1,14 @@
 package com.example.gilharap.mybluetooth3.viewmodel;
 
 import android.app.Activity;
-import android.bluetooth.BluetoothAdapter;
-import android.bluetooth.BluetoothDevice;
-import android.bluetooth.BluetoothSocket;
-import android.content.Intent;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 
-import com.example.gilharap.mybluetooth3.BTConnector;
+import com.example.gilharap.mybluetooth3.ConvertUtil;
+import com.example.gilharap.mybluetooth3.model.BTConnector;
+import com.example.gilharap.mybluetooth3.model.Message;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Created by Gil Harap on 06/04/2017.
@@ -22,23 +18,17 @@ public class MainViewModel extends BaseObservable implements ViewModel{
 
 
 
-    public interface viewModelListener{
-        void onShowPairedDevices(List<String> deviceNames);
-        void showDeviceDetails(String deviceName);
-    }
-
     private Activity mActivity;
-//    private BluetoothAdapter mBtAdapter;
     private viewModelListener mListener;
-//    private ArrayList<BluetoothDevice> mPairedDevicesList;
-//    private BluetoothDevice mSelectedDevice;
-//    private BluetoothSocket mSocket;
     private BTConnector mConnector;
+    private  ConvertUtil mConvertUtil;
 
 
     public MainViewModel(Activity activity, viewModelListener listener) {
         mActivity = activity;
         mListener = listener;
+
+        mConvertUtil = new ConvertUtil();
     }
 
     @Override
@@ -71,8 +61,54 @@ public class MainViewModel extends BaseObservable implements ViewModel{
 
 
     public void connect() {
-        mConnector.connect();
+        mConnector.connect(new BTConnector.SocketConnectedListener() {
+            @Override
+            public void onConnectionSuccess() {
+                mListener.onConnectionSuccess();
+            }
+
+            @Override
+            public void onConnectionError() {
+                mListener.onConnectionError();
+            }
+        });
+
     }
+
+    public void disConnect() {
+        mConnector.disconnect(new BTConnector.SocketDisConnectListener() {
+            @Override
+            public void onDisconnectError() {
+                mListener.onDisconnectFailed();
+            }
+        });
+    }
+
+    public void start(int level, int current) {
+        Message message = new Message();
+        message.setStart();
+        message.setPayloadCount(2);
+        message.addPayload(level);
+        message.addPayload(current);
+
+        mConnector.send(message);
+        mConnector.listenToIncomingMessages(message.getSize(), buffer -> {
+            String payload = "";
+            final String hex = ConvertUtil.bytesToHexString(buffer);
+            String binary =  mConvertUtil.byteToBinary(buffer, payload);
+
+            mListener.onUpdateUIFromMessage(hex, binary);
+        });
+    }
+
+
+
+    public void stop() {
+        Message message = new Message();
+        message.setStop();
+        mConnector.send(message);
+    }
+
 
     @Override
     public void onPause() {
@@ -88,5 +124,18 @@ public class MainViewModel extends BaseObservable implements ViewModel{
     public void onDestroy() {
 
     }
+
+    public interface viewModelListener{
+        void onShowPairedDevices(List<String> deviceNames);
+        void showDeviceDetails(String deviceName);
+
+        void onConnectionSuccess();
+        void onConnectionError();
+
+        void onDisconnectFailed();
+
+        void onUpdateUIFromMessage(String hex, String binary);
+    }
+
 
 }
