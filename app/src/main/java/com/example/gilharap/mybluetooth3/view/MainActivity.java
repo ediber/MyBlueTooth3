@@ -1,5 +1,6 @@
 package com.example.gilharap.mybluetooth3.view;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -43,7 +44,7 @@ public class MainActivity extends AppCompatActivity implements DevicesFragment.O
 
     @Override
     public void onConnect() {
-
+        mMainViewModel.connect();
     }
 
     @Override
@@ -66,7 +67,7 @@ public class MainActivity extends AppCompatActivity implements DevicesFragment.O
     private class viewModelListen implements MainViewModel.viewModelListener {
 
         @Override
-        public void showPairedDevices(List<String> deviceNames) {
+        public void onShowPairedDevices(List<String> deviceNames) {
             Bundle bundle = new Bundle();
             bundle.putStringArray(DevicesFragment.NAMES, deviceNames.toArray(new String[0]));
             mFragmentSwapper.swapToFragment(DevicesFragment.class, bundle, R.id.frame, false, true);
@@ -77,6 +78,13 @@ public class MainActivity extends AppCompatActivity implements DevicesFragment.O
             Bundle bundle = new Bundle();
             bundle.putString(ConnectFragment.NAME1, deviceName);
             mFragmentSwapper.swapToFragment(ConnectFragment.class, bundle, R.id.frame, true, true);
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == -1 || requestCode == 1){ // allowed
+            mMainViewModel.showPairedDevices();
         }
     }
 }
