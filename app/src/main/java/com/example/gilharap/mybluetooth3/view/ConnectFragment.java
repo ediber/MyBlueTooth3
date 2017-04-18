@@ -120,6 +120,7 @@ public class ConnectFragment extends Fragment {
         void onStopRequest();
     }
 
+
 /*    private class ViewModelListener implements MainViewModel.viewModelListener {
         @Override
         public void onShowPairedDevices(List<String> deviceNames) {
