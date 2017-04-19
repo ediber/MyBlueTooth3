@@ -7,6 +7,7 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.util.Log;
 
+import com.example.gilharap.mybluetooth3.utils.ConstantsUtil;
 import com.example.gilharap.mybluetooth3.viewmodel.MainViewModel;
 
 import java.io.IOException;
@@ -16,9 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-/**
- * Created by Gil Harap on 09/04/2017.
- */
 
 public class BTConnector {
 
@@ -178,9 +176,6 @@ public class BTConnector {
 
     public class AlreadyConnectedThread extends Thread {
 
-
-        // ... (Add other message types here as needed.)
-        private static final String TAG = "MY_APP_DEBUG_TAG";
         private int mBufferSize;
         private InputStream mInnput;
 //    private Handler mHandler; // handler that gets info from Bluetooth service
@@ -200,7 +195,7 @@ public class BTConnector {
             try {
                 mInnput = socket.getInputStream();
             } catch (IOException e) {
-                Log.e(TAG, "Error occurred when creating input stream", e);
+                Log.e(ConstantsUtil.TAG, "Error occurred when creating input stream", e);
             }
 
         }

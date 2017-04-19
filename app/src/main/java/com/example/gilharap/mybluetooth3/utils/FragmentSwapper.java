@@ -1,13 +1,10 @@
-package com.example.gilharap.mybluetooth3;
+package com.example.gilharap.mybluetooth3.utils;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 
-/**
- * Created by Edi.Bershatsky on 09/03/2017.
- */
 
 public class FragmentSwapper {
 
@@ -63,8 +60,8 @@ public class FragmentSwapper {
         return newFragment;
     }
 
-/*    // fragment still dont exist in FragmentManager
-    public Fragment addInitialFragment(Fragment newFragment, Bundle arguments, int containerResourceId, boolean isShouldAddToBackStack, String fragmentTag) {
+    // fragment still dont exist in FragmentManager
+/*    public Fragment addInitialFragment(Fragment newFragment, Bundle arguments, int containerResourceId, boolean isShouldAddToBackStack, String fragmentTag) {
 
         FragmentTransaction mFt = null;
         newFragment.setArguments(arguments);

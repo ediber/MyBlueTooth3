@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -50,6 +51,12 @@ public class ConnectFragment extends Fragment {
 
     @BindView(R.id.current)
     Spinner mSpinnerCurrent;
+
+    @BindView(R.id.indicatorsLayout1)
+    LinearLayout mIndicatorsLayout1;
+
+    @BindView(R.id.indicatorsLayout2)
+    LinearLayout mIndicatorsLayout2;
 
 //    MainViewModel viewModel = new MainViewModel(getActivity());
 
@@ -125,10 +132,10 @@ public class ConnectFragment extends Fragment {
     public void updateUI(String hex, String binary) {
         for(int i=0; i < binary.length()/2; i++){
             if(binary.charAt(i) == '0'){ // attached
-                mSpinnerLevel.getChildAt(i).setBackground(ContextCompat.getDrawable(getContext(), R.drawable.circle_green));
+                mIndicatorsLayout1.getChildAt(i).setBackground(ContextCompat.getDrawable(getContext(), R.drawable.circle_green));
 //                Log.d(TAG, "0, green");
             } else {
-                mSpinnerLevel.getChildAt(i).setBackground(ContextCompat.getDrawable(getContext(), R.drawable.circle_red));
+                mIndicatorsLayout2.getChildAt(i).setBackground(ContextCompat.getDrawable(getContext(), R.drawable.circle_red));
 //                Log.d(TAG, "1, red");
             }
         }
@@ -136,10 +143,10 @@ public class ConnectFragment extends Fragment {
         int layoutIndex = 0;
         for(int i = binary.length()/2; i < binary.length(); i++){
             if(binary.charAt(i) == '0'){ // attached
-                mSpinnerCurrent.getChildAt(layoutIndex).setBackground(ContextCompat.getDrawable(getContext(), R.drawable.circle_green));
+                mIndicatorsLayout2.getChildAt(layoutIndex).setBackground(ContextCompat.getDrawable(getContext(), R.drawable.circle_green));
 //                Log.d(TAG, "0, green");
             } else {
-                mSpinnerCurrent.getChildAt(layoutIndex).setBackground(ContextCompat.getDrawable(getContext(), R.drawable.circle_red));
+                mIndicatorsLayout2.getChildAt(layoutIndex).setBackground(ContextCompat.getDrawable(getContext(), R.drawable.circle_red));
 //                Log.d(TAG, "1, red");
             }
 

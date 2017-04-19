@@ -11,9 +11,6 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-/**
- * Created by Gil Harap on 03/04/2017.
- */
 
 public class PairedAdapter extends RecyclerView.Adapter<PairedAdapter.CustomViewHolder>{
 

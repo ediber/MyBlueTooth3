@@ -6,7 +6,7 @@ import android.os.Bundle;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
-import com.example.gilharap.mybluetooth3.FragmentSwapper;
+import com.example.gilharap.mybluetooth3.utils.FragmentSwapper;
 import com.example.gilharap.mybluetooth3.R;
 import com.example.gilharap.mybluetooth3.viewmodel.MainViewModel;
 
@@ -14,6 +14,8 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+
+import static com.example.gilharap.mybluetooth3.utils.ConstantsUtil.CONNECT_FRAGMENT;
 
 public class MainActivity extends AppCompatActivity implements DevicesFragment.OnFragmentInteractionListener, ConnectFragment.OnFragmentInteractionListener {
 
@@ -33,7 +35,7 @@ public class MainActivity extends AppCompatActivity implements DevicesFragment.O
         mMainViewModel = new MainViewModel(this, new viewModelListen());
 
         mFragmentSwapper = FragmentSwapper.getInstance(getSupportFragmentManager());
-        mConnectFragment = ConnectFragment.newInstance();
+//        mConnectFragment = ConnectFragment.newInstance();
 
 
         mMainViewModel.onCreate();
@@ -79,7 +81,8 @@ public class MainActivity extends AppCompatActivity implements DevicesFragment.O
         public void showDeviceDetails(String deviceName) {
             Bundle bundle = new Bundle();
             bundle.putString(ConnectFragment.NAME1, deviceName);
-            mFragmentSwapper.swapToFragment(ConnectFragment.class, bundle, R.id.frame, true, true);
+           mConnectFragment = (ConnectFragment) mFragmentSwapper.swapToFragment(ConnectFragment.class, bundle, R.id.frame, true, true);
+//            mFragmentSwapper.addInitialFragment(mConnectFragment, bundle, R.id.frame, true, CONNECT_FRAGMENT);
         }
 
         @Override

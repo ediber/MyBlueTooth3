@@ -4,15 +4,12 @@ import android.app.Activity;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 
-import com.example.gilharap.mybluetooth3.ConvertUtil;
+import com.example.gilharap.mybluetooth3.utils.ConvertUtil;
 import com.example.gilharap.mybluetooth3.model.BTConnector;
 import com.example.gilharap.mybluetooth3.model.Message;
 
 import java.util.List;
 
-/**
- * Created by Gil Harap on 06/04/2017.
- */
 
 public class MainViewModel extends BaseObservable implements ViewModel{
 

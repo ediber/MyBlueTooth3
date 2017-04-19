@@ -1,10 +1,6 @@
-package com.example.gilharap.mybluetooth3;
+package com.example.gilharap.mybluetooth3.utils;
 
 import java.util.ArrayList;
-
-/**
- * Created by Gil Harap on 05/04/2017.
- */
 
 public class ConvertUtil {
 
@@ -19,7 +15,7 @@ public class ConvertUtil {
         return Byte.parseByte(ans);
     }
 
-    public static String intToBinaryString(int num) {
+    private static String intToBinaryString(int num) {
         String ans =  Integer.toBinaryString(num);
         for(int i = ans.length(); i < 8; i++){
             ans = "0" + ans ;
@@ -53,7 +49,7 @@ public class ConvertUtil {
     private void generateTableOfAllBinaries() {
         mBinaries = new ArrayList<>();
         for (int i = 0; i < 256; i++) {
-            String binary = ConvertUtil.intToBinaryString(i);
+            String binary = intToBinaryString(i);
             mBinaries.add(binary);
         }
     }

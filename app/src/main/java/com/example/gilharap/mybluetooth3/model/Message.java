@@ -1,13 +1,10 @@
 package com.example.gilharap.mybluetooth3.model;
 
-import com.example.gilharap.mybluetooth3.ConvertUtil;
+import com.example.gilharap.mybluetooth3.utils.ConvertUtil;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 
-/**
- * Created by Gil Harap on 05/04/2017.
- */
 
 public class Message {
 
