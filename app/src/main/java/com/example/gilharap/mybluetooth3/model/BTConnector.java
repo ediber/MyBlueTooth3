@@ -133,10 +133,7 @@ public class BTConnector {
 
     private class ConnectingThread extends Thread {
 
-        private static final String TAG = "MY_APP_DEBUG_TAG";
-
         private SocketConnectedListener listener;
-
 
         public ConnectingThread(SocketConnectedListener listener) {
             this.listener = listener;
@@ -201,7 +198,8 @@ public class BTConnector {
         }
 
         public void run() {
-            mBuffer = new byte[mBufferSize];
+//            mBuffer = new byte[mBufferSize];
+            mBuffer = new byte[ConstantsUtil.BUFFER_SIZE];
             int numBytes; // bytes returned from read()
 
             // Keep listening to the InputStream until an exception occurs.
@@ -209,10 +207,13 @@ public class BTConnector {
                 try {
                     // Read from the InputStream.
                     numBytes = mInnput.read(mBuffer);
-                    mListener.onReceieved(mBuffer);
+
+                    Log.d(ConstantsUtil.TAG, "numBytes: " + numBytes);
+
+                    mListener.onReceived(mBuffer);
 
                 } catch (IOException e) {
-                    //    Log.d(TAG, "Input stream was disconnected", e);
+                        Log.d(ConstantsUtil.TAG, "Input stream was disconnected", e);
                     break;
                 }
             }
@@ -234,6 +235,6 @@ public class BTConnector {
     }
 
     public interface MessageReceivedListener {
-        void onReceieved(byte[] mBuffer);
+        void onReceived(byte[] mBuffer);
     }
 }

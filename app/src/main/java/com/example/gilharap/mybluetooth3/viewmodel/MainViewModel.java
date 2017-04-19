@@ -89,11 +89,16 @@ public class MainViewModel extends BaseObservable implements ViewModel{
 
         mConnector.send(message);
         mConnector.listenToIncomingMessages(message.getSize(), buffer -> {
-            String payload = "";
-            final String hex = ConvertUtil.bytesToHexString(buffer);
-            String binary =  mConvertUtil.byteToBinary(buffer, payload);
 
-            mListener.onUpdateUIFromMessage(hex, binary);
+            List<byte[]> packets = ConvertUtil.bufferToPackets(buffer);
+
+
+            //////////////////////////////////////////////////////////////////////
+
+            final String hex = ConvertUtil.bytesToHexString(buffer); // just for test TODO remove later
+            String payload =  mConvertUtil.byteToBinary(buffer);
+
+            mListener.onUpdateUIFromMessage(hex, payload);
         });
     }
 

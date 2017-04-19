@@ -1,6 +1,8 @@
 package com.example.gilharap.mybluetooth3.utils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class ConvertUtil {
 
@@ -54,8 +56,10 @@ public class ConvertUtil {
         }
     }
 
-    public String byteToBinary(byte[] buffer, String payload) {
+    public String byteToBinary(byte[] buffer) {
         // payload to binary
+        String payload = "";
+
         for(int i=5; i<buffer.length-2; i++){
             int binaryindex = buffer[i] & 0xFF;
             String binaryStr = mBinaries.get(binaryindex);
@@ -63,4 +67,24 @@ public class ConvertUtil {
         }
         return payload;
     }
+
+    public static List<byte[]> bufferToPackets(byte[] buffer) {
+        List<byte[]> lst = new ArrayList<>();
+        int from = 0;
+        int to = 0;
+
+        for(int i=0; i<buffer.length - 1; i++){
+            if(buffer[i] == 0xDA && buffer[i] == 0xDE){
+                to = i - 1;
+                if(to > 0){ // not first DA DE
+                    lst.add(Arrays.copyOfRange(buffer, from, to));
+                }
+                from = to + ConstantsUtil.DA_DE_SIZE + 1;
+            }
+        }
+
+
+        return null;
+    }
+
 }
