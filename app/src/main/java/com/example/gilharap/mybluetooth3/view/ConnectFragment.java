@@ -4,7 +4,6 @@ import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -52,13 +51,12 @@ public class ConnectFragment extends Fragment {
     @BindView(R.id.current)
     Spinner mSpinnerCurrent;
 
-    @BindView(R.id.indicatorsLayout1)
+    @BindView(R.id.indicatorsLayoutPositive)
     LinearLayout mIndicatorsLayout1;
 
-    @BindView(R.id.indicatorsLayout2)
+    @BindView(R.id.indicatorsLayoutNegative)
     LinearLayout mIndicatorsLayout2;
 
-//    MainViewModel viewModel = new MainViewModel(getActivity());
 
     public ConnectFragment() {
         // Required empty public constructor
@@ -83,9 +81,6 @@ public class ConnectFragment extends Fragment {
         // Inflate the layout for this fragment
         View view =  inflater.inflate(R.layout.fragment_connect, container, false);
         ButterKnife.bind(this, view);
-
-//        MainViewModel viewModel = new MainViewModel(getActivity(), new ViewModelListener());
-//        FragmentConnectBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_connect, container, false);
 
         mNameView.setText(mName);
 
@@ -175,16 +170,4 @@ public class ConnectFragment extends Fragment {
         void onStopRequest();
     }
 
-
-/*    private class ViewModelListener implements MainViewModel.viewModelListener {
-        @Override
-        public void onShowPairedDevices(List<String> deviceNames) {
-
-        }
-
-        @Override
-        public void showDeviceDetails(String deviceName) {
-
-        }
-    }*/
 }

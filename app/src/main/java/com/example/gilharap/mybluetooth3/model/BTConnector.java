@@ -66,7 +66,7 @@ public class BTConnector {
         new AlreadyConnectedThread(mSocket, receivingMessageSize, listener).start();
     }
 
-    public List<String> showPairedDevices(MainViewModel.viewModelListener listener) {
+    private List<String> showPairedDevices(MainViewModel.viewModelListener listener) {
         Set<BluetoothDevice> pairedDevices = mBtAdapter.getBondedDevices();
         mPairedDevicesList = new ArrayList<>(pairedDevices);
 

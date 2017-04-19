@@ -6,7 +6,7 @@ import android.databinding.Bindable;
 
 import com.example.gilharap.mybluetooth3.utils.ConvertUtil;
 import com.example.gilharap.mybluetooth3.model.BTConnector;
-import com.example.gilharap.mybluetooth3.model.Message;
+import com.example.gilharap.mybluetooth3.model.LODMessage;
 
 import java.util.List;
 
@@ -82,9 +82,8 @@ public class MainViewModel extends BaseObservable implements ViewModel{
     }
 
     public void start(int level, int current) {
-        Message message = new Message();
+        LODMessage message = new LODMessage();
         message.setStart();
-        message.setPayloadCount(2);
         message.addPayload(level);
         message.addPayload(current);
 
@@ -101,7 +100,7 @@ public class MainViewModel extends BaseObservable implements ViewModel{
 
 
     public void stop() {
-        Message message = new Message();
+        LODMessage message = new LODMessage();
         message.setStop();
         mConnector.send(message);
     }
