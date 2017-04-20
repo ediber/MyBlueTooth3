@@ -179,7 +179,6 @@ public class BTConnector {
 
 
         private MessageReceivedListener mListener;
-        private byte[] mBuffer;
 
         public AlreadyConnectedThread(BluetoothSocket socket, int bufferSize,  MessageReceivedListener listener) {
             mListener = listener;
@@ -192,30 +191,63 @@ public class BTConnector {
             try {
                 mInnput = socket.getInputStream();
             } catch (IOException e) {
-                Log.e(ConstantsUtil.TAG, "Error occurred when creating input stream", e);
+                Log.e(ConstantsUtil.MY_TAG, "Error occurred when creating input stream", e);
             }
 
         }
 
         public void run() {
-//            mBuffer = new byte[mBufferSize];
-            mBuffer = new byte[ConstantsUtil.BUFFER_SIZE];
+//            buffer = new byte[mBufferSize];
+            byte[] buffer = new byte[ConstantsUtil.BUFFER_SIZE];
+
+
             int numBytes; // bytes returned from read()
 
             // Keep listening to the InputStream until an exception occurs.
             while (true) {
+
+
                 try {
                     // Read from the InputStream.
-                    numBytes = mInnput.read(mBuffer);
+                    numBytes = mInnput.read(buffer);
 
-                    Log.d(ConstantsUtil.TAG, "numBytes: " + numBytes);
+                    Log.d(ConstantsUtil.MY_TAG, "numBytes: " + numBytes);
 
-                    mListener.onReceived(mBuffer);
+                    mListener.onReceived(buffer);
 
                 } catch (IOException e) {
-                        Log.d(ConstantsUtil.TAG, "Input stream was disconnected", e);
+                    Log.d(ConstantsUtil.MY_TAG, "Input stream was disconnected", e);
                     break;
                 }
+
+
+                /*try {
+                    byte[] initBuffer = new byte[3];
+
+                    // Read from the InputStream.
+                    numBytes = mInnput.read(initBuffer);
+                    Log.d(ConstantsUtil.MY_TAG, "num first Bytes: " + numBytes);
+                    Log.d(ConstantsUtil.MY_TAG, " first buffer: " + ConvertUtil.bytesToHexString(initBuffer));
+
+                    int bytesLeftSize = (int)(initBuffer[2] & 0xFF) + 4;
+
+
+                    byte[] leftBuffer = new byte[bytesLeftSize];
+                    numBytes = mInnput.read(leftBuffer);
+
+                    Log.d(ConstantsUtil.MY_TAG, "num left Bytes: " + numBytes);
+                    Log.d(ConstantsUtil.MY_TAG, "second buffer: " + ConvertUtil.bytesToHexString(leftBuffer));
+
+                    byte[] both = new byte[initBuffer.length + leftBuffer.length];
+                    System.arraycopy(initBuffer, 0, both, 0, initBuffer.length);
+                    System.arraycopy(leftBuffer, 0, both, initBuffer.length, leftBuffer.length);
+
+                    mListener.onReceived(both);
+
+                } catch (IOException e) {
+                        Log.d(ConstantsUtil.MY_TAG, "Input stream was disconnected", e);
+                    break;
+                }*/
             }
         }
     }

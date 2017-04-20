@@ -79,7 +79,7 @@ public class ConnectFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view =  inflater.inflate(R.layout.fragment_connect, container, false);
+        View view = inflater.inflate(R.layout.fragment_connect, container, false);
         ButterKnife.bind(this, view);
 
         mNameView.setText(mName);
@@ -106,7 +106,6 @@ public class ConnectFragment extends Fragment {
     }
 
 
-
     @Override
     public void onAttach(Context context) {
         super.onAttach(context);
@@ -125,25 +124,36 @@ public class ConnectFragment extends Fragment {
     }
 
     public void updateUI(String hex, String binary) {
-        for(int i=0; i < binary.length()/2; i++){
-            if(binary.charAt(i) == '0'){ // attached
+        for (int i = 0; i < binary.length() / 2; i++) {
+            if (binary.charAt(i) == '0') { // attached
+
                 mIndicatorsLayout1.getChildAt(i).setBackground(ContextCompat.getDrawable(getContext(), R.drawable.circle_green));
-//                Log.d(TAG, "0, green");
+
+//                Log.d(ConstantsUtil.MY_TAG, "positive 0, green");
             } else {
+
                 mIndicatorsLayout2.getChildAt(i).setBackground(ContextCompat.getDrawable(getContext(), R.drawable.circle_red));
-//                Log.d(TAG, "1, red");
+
+//                Log.d(ConstantsUtil.MY_TAG, "positive 1, red");
             }
+//            Log.d(ConstantsUtil.MY_TAG, "index to circle positive: " + i);
         }
 
         int layoutIndex = 0;
-        for(int i = binary.length()/2; i < binary.length(); i++){
-            if(binary.charAt(i) == '0'){ // attached
+        for (int i = binary.length() / 2; i < binary.length(); i++) {
+            if (binary.charAt(i) == '0') { // attached
+
                 mIndicatorsLayout2.getChildAt(layoutIndex).setBackground(ContextCompat.getDrawable(getContext(), R.drawable.circle_green));
-//                Log.d(TAG, "0, green");
+
+//                Log.d(ConstantsUtil.MY_TAG, "negative 0, green");
             } else {
+
                 mIndicatorsLayout2.getChildAt(layoutIndex).setBackground(ContextCompat.getDrawable(getContext(), R.drawable.circle_red));
-//                Log.d(TAG, "1, red");
+
+//                Log.d(ConstantsUtil.MY_TAG, "negative 1, red");
             }
+
+//            Log.d(ConstantsUtil.MY_TAG, "index to circle negative: " + i);
 
             layoutIndex++;
         }
@@ -151,7 +161,7 @@ public class ConnectFragment extends Fragment {
 
     private void setSpinners() {
         // set spinners
-        List<String> levelsLst = new ArrayList(Arrays.asList("P_95_N_5", "P_92_5_N_7_5", "P_90_N_10" ,"P_87_5_N_12_5", "P_85_N_15", "P_80_N_20", "P_75_N_25", "P_70_N_30"));
+        List<String> levelsLst = new ArrayList(Arrays.asList("P_95_N_5", "P_92_5_N_7_5", "P_90_N_10", "P_87_5_N_12_5", "P_85_N_15", "P_80_N_20", "P_75_N_25", "P_70_N_30"));
         ArrayAdapter<String> levelArrayAdapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_spinner_item, levelsLst); //selected item will look like a spinner set from XML
         levelArrayAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         mSpinnerLevel.setAdapter(levelArrayAdapter);
@@ -165,8 +175,11 @@ public class ConnectFragment extends Fragment {
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onConnect();
+
         void onDisConnect();
+
         void onStartRequest(int selectedItemPosition, int selectedItemPosition1);
+
         void onStopRequest();
     }
 

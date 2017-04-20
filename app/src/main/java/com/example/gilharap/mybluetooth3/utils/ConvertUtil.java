@@ -13,14 +13,14 @@ public class ConvertUtil {
     }
 
     public static Byte intToHexByte(int num) {
-        String ans =  Integer.toHexString(num);
+        String ans = Integer.toHexString(num);
         return Byte.parseByte(ans);
     }
 
     private static String intToBinaryString(int num) {
-        String ans =  Integer.toBinaryString(num);
-        for(int i = ans.length(); i < 8; i++){
-            ans = "0" + ans ;
+        String ans = Integer.toBinaryString(num);
+        for (int i = ans.length(); i < 8; i++) {
+            ans = "0" + ans;
         }
         return ans;
     }
@@ -37,11 +37,11 @@ public class ConvertUtil {
         return new String(hexChars);
     }
 
-    public static byte[] ByteListToArray(ArrayList<Byte> list){
+    public static byte[] ByteListToArray(ArrayList<Byte> list) {
         Byte[] objects = list.toArray(new Byte[list.size()]);
         byte[] bytes = new byte[objects.length];
         int i = 0;
-        for(Byte b: objects){
+        for (Byte b : objects) {
             bytes[i++] = b.byteValue();
         }
         return bytes;
@@ -60,7 +60,7 @@ public class ConvertUtil {
         // payload to binary
         String payload = "";
 
-        for(int i=5; i<buffer.length-2; i++){
+        for (int i = 5; i < buffer.length - 2; i++) {
             int binaryindex = buffer[i] & 0xFF;
             String binaryStr = mBinaries.get(binaryindex);
             payload = payload + binaryStr;
@@ -71,20 +71,29 @@ public class ConvertUtil {
     public static List<byte[]> bufferToPackets(byte[] buffer) {
         List<byte[]> lst = new ArrayList<>();
         int from = 0;
-        int to = 0;
+        int to;
 
-        for(int i=0; i<buffer.length - 1; i++){
-            if(buffer[i] == 0xDA && buffer[i] == 0xDE){
+        for (int i = 0; i < buffer.length - 1; i++) {
+            /*if((buffer[i] & 0xFF) == 0xDA && (buffer[i+1] & 0xFF) == 0xDE){
                 to = i - 1;
                 if(to > 0){ // not first DA DE
                     lst.add(Arrays.copyOfRange(buffer, from, to));
                 }
-                from = to + ConstantsUtil.DA_DE_SIZE + 1;
+                from = i;
+            }*/
+
+            if ((buffer[i] & 0xFF) == 0xDA && (buffer[i + 1] & 0xFF) == 0xDE) {
+                int sizeIndex = from + ConstantsUtil.DA_DE_SIZE;
+                int messageLength = ConstantsUtil.DA_DE_SIZE + 3 + (int)(buffer[sizeIndex] & 0xFF) + 2;
+                to = from + messageLength;
+
+                lst.add(Arrays.copyOfRange(buffer, from, to));
+
+                from = to + 1;
             }
         }
 
-
-        return null;
+        return lst;
     }
 
 }

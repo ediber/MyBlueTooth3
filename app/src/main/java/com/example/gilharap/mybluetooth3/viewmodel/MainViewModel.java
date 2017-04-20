@@ -3,10 +3,12 @@ package com.example.gilharap.mybluetooth3.viewmodel;
 import android.app.Activity;
 import android.databinding.BaseObservable;
 import android.databinding.Bindable;
+import android.util.Log;
 
-import com.example.gilharap.mybluetooth3.utils.ConvertUtil;
 import com.example.gilharap.mybluetooth3.model.BTConnector;
 import com.example.gilharap.mybluetooth3.model.LODMessage;
+import com.example.gilharap.mybluetooth3.utils.ConstantsUtil;
+import com.example.gilharap.mybluetooth3.utils.ConvertUtil;
 
 import java.util.List;
 
@@ -94,11 +96,16 @@ public class MainViewModel extends BaseObservable implements ViewModel{
 
 
             //////////////////////////////////////////////////////////////////////
+            for (byte[] packet: packets) {
+                final String hex = ConvertUtil.bytesToHexString(packet); // just for test TODO remove later
+                String payload =  mConvertUtil.byteToBinary(packet);
 
-            final String hex = ConvertUtil.bytesToHexString(buffer); // just for test TODO remove later
-            String payload =  mConvertUtil.byteToBinary(buffer);
+                Log.d(ConstantsUtil.MY_TAG, " packet: " + ConvertUtil.bytesToHexString(packet));
 
-            mListener.onUpdateUIFromMessage(hex, payload);
+                mListener.onUpdateUIFromMessage(hex, payload);
+            }
+
+
         });
     }
 
