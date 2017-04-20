@@ -58,8 +58,8 @@ public class BTConnector {
         new DisconnectingThread(mSocket, listener).start();
     }
 
-    public void send(Message message) {
-        writeToSocket(message.toBytes());
+    public void send(SendMessage sendMessage) {
+        writeToSocket(sendMessage.toBytes());
     }
 
     public void listenToIncomingMessages(int receivingMessageSize, MessageReceivedListener listener) {
@@ -109,7 +109,7 @@ public class BTConnector {
         return mSelectedDevice.getName();
     }
 
-    // Call this from the main activity to send data to the remote device.
+    // Call this from the main activity to mLst data to the remote device.
     public void writeToSocket(byte[] bytes) {
 
         OutputStream outStream = null;
@@ -201,7 +201,7 @@ public class BTConnector {
             byte[] buffer = new byte[ConstantsUtil.BUFFER_SIZE];
 
 
-            int numBytes; // bytes returned from read()
+            int numBytes; // mLst returned from read()
 
             // Keep listening to the InputStream until an exception occurs.
             while (true) {
@@ -227,7 +227,7 @@ public class BTConnector {
                     // Read from the InputStream.
                     numBytes = mInnput.read(initBuffer);
                     Log.d(ConstantsUtil.MY_TAG, "num first Bytes: " + numBytes);
-                    Log.d(ConstantsUtil.MY_TAG, " first buffer: " + ConvertUtil.bytesToHexString(initBuffer));
+                    Log.d(ConstantsUtil.MY_TAG, " first buffer: " + ConvertUtil.decimalToHexString(initBuffer));
 
                     int bytesLeftSize = (int)(initBuffer[2] & 0xFF) + 4;
 
@@ -236,7 +236,7 @@ public class BTConnector {
                     numBytes = mInnput.read(leftBuffer);
 
                     Log.d(ConstantsUtil.MY_TAG, "num left Bytes: " + numBytes);
-                    Log.d(ConstantsUtil.MY_TAG, "second buffer: " + ConvertUtil.bytesToHexString(leftBuffer));
+                    Log.d(ConstantsUtil.MY_TAG, "second buffer: " + ConvertUtil.decimalToHexString(leftBuffer));
 
                     byte[] both = new byte[initBuffer.length + leftBuffer.length];
                     System.arraycopy(initBuffer, 0, both, 0, initBuffer.length);

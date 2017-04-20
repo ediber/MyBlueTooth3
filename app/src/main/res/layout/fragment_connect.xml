@@ -78,9 +78,9 @@
 
         <TextView
             android:id="@+id/recievedPackets"
-            android:layout_width="wrap_content"
+            android:layout_width="50dp"
             android:layout_height="wrap_content"
-            android:text="viewModel."
+            android:text="@={viewModel.recievedPackets}"
             android:layout_marginRight="47dp"
             app:layout_constraintRight_toRightOf="parent"
             android:layout_marginTop="87dp"

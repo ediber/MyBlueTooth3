@@ -6,10 +6,12 @@ import android.databinding.Bindable;
 import android.util.Log;
 
 import com.example.gilharap.mybluetooth3.model.BTConnector;
-import com.example.gilharap.mybluetooth3.model.LODMessage;
+import com.example.gilharap.mybluetooth3.model.LODSendMessage;
+import com.example.gilharap.mybluetooth3.model.ReceiveMessage;
 import com.example.gilharap.mybluetooth3.utils.ConstantsUtil;
 import com.example.gilharap.mybluetooth3.utils.ConvertUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 
@@ -21,6 +23,7 @@ public class MainViewModel extends BaseObservable implements ViewModel{
     private viewModelListener mListener;
     private BTConnector mConnector;
     private  ConvertUtil mConvertUtil;
+    private int mRecievedPackets = 0;
 
 
     public MainViewModel(Activity activity, viewModelListener listener) {
@@ -46,12 +49,12 @@ public class MainViewModel extends BaseObservable implements ViewModel{
 
     @Bindable
     public String getRecievedPackets(){
-        return "5";
+        return mRecievedPackets + "";
     }
 
-
-
-
+    public void setRecievedPackets(String packets) {
+        this.mRecievedPackets = Integer.parseInt(packets);
+    }
 
     public void onDeviceSelected(int position) {
         mConnector.setSelectedDevice(position);
@@ -84,27 +87,30 @@ public class MainViewModel extends BaseObservable implements ViewModel{
     }
 
     public void start(int level, int current) {
-        LODMessage message = new LODMessage();
-        message.setStart();
-        message.addPayload(level);
-        message.addPayload(current);
+        LODSendMessage sendMessage = new LODSendMessage();
+        sendMessage.setStart();
+        sendMessage.addPayload(level);
+        sendMessage.addPayload(current);
 
-        mConnector.send(message);
-        mConnector.listenToIncomingMessages(message.getSize(), buffer -> {
+        mConnector.send(sendMessage);
+        mConnector.listenToIncomingMessages(sendMessage.getSize(), buffer -> {
 
-            List<byte[]> packets = ConvertUtil.bufferToPackets(buffer);
+            List<Integer> positiveBuffer = new ArrayList<>();
+            positiveBuffer = ConvertUtil.bytesToPositive(buffer);
+
+            List<List<Integer>> packets = ConvertUtil.bufferToPackets(positiveBuffer);
 
 
-            //////////////////////////////////////////////////////////////////////
-            for (byte[] packet: packets) {
-                final String hex = ConvertUtil.bytesToHexString(packet); // just for test TODO remove later
-                String payload =  mConvertUtil.byteToBinary(packet);
+            for (List<Integer> packet: packets) {
+                final String hex = ConvertUtil.decimalToHexString(packet); // just for test TODO remove later
 
-                Log.d(ConstantsUtil.MY_TAG, " packet: " + ConvertUtil.bytesToHexString(packet));
+                ReceiveMessage recieveMessage = new ReceiveMessage(packet);
+                String payload = recieveMessage.getPayloadInBinary();
+
+//                Log.d(ConstantsUtil.MY_TAG, " packet: " + ConvertUtil.decimalToHexString(packet));
 
                 mListener.onUpdateUIFromMessage(hex, payload);
             }
-
 
         });
     }
@@ -112,7 +118,7 @@ public class MainViewModel extends BaseObservable implements ViewModel{
 
 
     public void stop() {
-        LODMessage message = new LODMessage();
+        LODSendMessage message = new LODSendMessage();
         message.setStop();
         mConnector.send(message);
     }

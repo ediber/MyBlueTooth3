@@ -6,8 +6,8 @@ import com.example.gilharap.mybluetooth3.utils.ConvertUtil;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-public abstract class Message{
-    protected ArrayList<Byte> send;
+public abstract class SendMessage {
+    protected ArrayList<Byte> bytes;
     protected int payLoadPosition = 4;
     private int payloadCount = 0;
 
@@ -15,11 +15,11 @@ public abstract class Message{
     public abstract int getSize();
 
     public byte[] toBytes() {
-        return ConvertUtil.ByteListToArray(send);
+        return ConvertUtil.ByteListToArray(bytes);
     }
 
     public void addPayload(int num) {
-        send.add(payLoadPosition, ConvertUtil.intToHexByte(num));
+        bytes.add(payLoadPosition, ConvertUtil.intToHexByte(num));
         payLoadPosition ++;
         payloadCount ++;
         setPayloadCount(payloadCount);
@@ -27,11 +27,11 @@ public abstract class Message{
 
     private void setPayloadCount(int count) {
         Byte countByte = ConvertUtil.intToHexByte(count);
-        send.set(2, countByte);
+        bytes.set(2, countByte);
     }
 
     public void setStart() {
-        send = new ArrayList<>(Arrays.asList(
+        bytes = new ArrayList<>(Arrays.asList(
                 (byte) 0xDA,
                 (byte) 0xDE,
                 (byte) 0x00
@@ -39,7 +39,7 @@ public abstract class Message{
     }
 
     public void setStop() {
-        send = new ArrayList<>(Arrays.asList(
+        bytes = new ArrayList<>(Arrays.asList(
                 (byte) 0xDA,
                 (byte) 0xDE,
                 (byte) 0x00

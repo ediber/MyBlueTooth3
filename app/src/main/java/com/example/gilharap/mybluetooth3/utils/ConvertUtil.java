@@ -1,7 +1,6 @@
 package com.example.gilharap.mybluetooth3.utils;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class ConvertUtil {
@@ -25,12 +24,12 @@ public class ConvertUtil {
         return ans;
     }
 
-    public static String bytesToHexString(byte[] bytes) {
+    public static String decimalToHexString(List<Integer> lst) {
         final char[] hexArray = "0123456789ABCDEF".toCharArray();
 
-        char[] hexChars = new char[bytes.length * 2];
-        for (int j = 0; j < bytes.length; j++) {
-            int v = bytes[j] & 0xFF;
+        char[] hexChars = new char[lst.size() * 2];
+        for (int j = 0; j < lst.size(); j++) {
+            int v = lst.get(j);
             hexChars[j * 2] = hexArray[v >>> 4];
             hexChars[j * 2 + 1] = hexArray[v & 0x0F];
         }
@@ -56,7 +55,7 @@ public class ConvertUtil {
         }
     }
 
-    public String byteToBinary(byte[] buffer) {
+   /* public String byteToBinary(byte[] buffer) {
         // payload to binary
         String payload = "";
 
@@ -66,28 +65,29 @@ public class ConvertUtil {
             payload = payload + binaryStr;
         }
         return payload;
+    }*/
+
+    public String decimalToBinary(int dec) {
+        String binaryStr = mBinaries.get(dec);
+        return binaryStr;
     }
 
-    public static List<byte[]> bufferToPackets(byte[] buffer) {
-        List<byte[]> lst = new ArrayList<>();
+    public static List<List<Integer>> bufferToPackets(List<Integer> buffer) {
+        List<List<Integer>> lst = new ArrayList<>();
         int from = 0;
         int to;
 
-        for (int i = 0; i < buffer.length - 1; i++) {
-            /*if((buffer[i] & 0xFF) == 0xDA && (buffer[i+1] & 0xFF) == 0xDE){
-                to = i - 1;
-                if(to > 0){ // not first DA DE
-                    lst.add(Arrays.copyOfRange(buffer, from, to));
-                }
-                from = i;
-            }*/
+        for (int i = 0; i < buffer.size() - 1; i++) {
 
-            if ((buffer[i] & 0xFF) == 0xDA && (buffer[i + 1] & 0xFF) == 0xDE) {
+            if ((buffer.get(i)) == 0xDA && (buffer.get(i+1)) == 0xDE) {
                 int sizeIndex = from + ConstantsUtil.DA_DE_SIZE;
-                int messageLength = ConstantsUtil.DA_DE_SIZE + 3 + (int)(buffer[sizeIndex] & 0xFF) + 2;
+                int messageLength = ConstantsUtil.DA_DE_SIZE + 3 + buffer.get(sizeIndex) + 2;
                 to = from + messageLength;
 
-                lst.add(Arrays.copyOfRange(buffer, from, to));
+                List<Integer> unCheckedPacket = buffer.subList(from, to);
+                if(validate(unCheckedPacket)){
+                    lst.add(unCheckedPacket);
+                }
 
                 from = to + 1;
             }
@@ -96,4 +96,25 @@ public class ConvertUtil {
         return lst;
     }
 
+    private static boolean validate(List<Integer> packet) {
+        if(packet.get(4) == 0){
+            return true;
+        }
+        int sum = 0;
+        for(int i=3; i<packet.size()-2; i++){
+            sum += packet.get(i);
+        }
+        if (sum == packet.get(packet.size()-2) * Math.pow(16, 2) + packet.get(packet.size()-1)){
+            return true;
+        }
+        return false;
+    }
+
+    public static List<Integer> bytesToPositive(byte[] bytes) {
+        List<Integer> positive = new ArrayList<>();
+        for (int i = 0; i < bytes.length - 1; i++) {
+            positive.add(bytes[i] & 0xFF);
+        }
+        return positive;
+    }
 }
