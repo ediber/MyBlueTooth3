@@ -11,7 +11,6 @@ import com.example.gilharap.mybluetooth3.model.ReceiveMessage;
 import com.example.gilharap.mybluetooth3.utils.ConstantsUtil;
 import com.example.gilharap.mybluetooth3.utils.ConvertUtil;
 
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -93,24 +92,29 @@ public class MainViewModel extends BaseObservable implements ViewModel{
         sendMessage.addPayload(current);
 
         mConnector.send(sendMessage);
-        mConnector.listenToIncomingMessages(sendMessage.getSize(), buffer -> {
-
-            List<Integer> positiveBuffer = new ArrayList<>();
-            positiveBuffer = ConvertUtil.bytesToPositive(buffer);
-
-            List<List<Integer>> packets = ConvertUtil.bufferToPackets(positiveBuffer);
+        mConnector.listenToIncomingMessages(sendMessage.getSize(), (buffer, numBytes) -> {
 
 
-            for (List<Integer> packet: packets) {
-                final String hex = ConvertUtil.decimalToHexString(packet); // just for test TODO remove later
+                List<Integer> positiveBuffer;
+                positiveBuffer = ConvertUtil.bytesToPositive(buffer);
 
-                ReceiveMessage recieveMessage = new ReceiveMessage(packet);
-                String payload = recieveMessage.getPayloadInBinary();
+                List<ReceiveMessage> messages = ConvertUtil.bufferToPackets(positiveBuffer, numBytes);
 
-//                Log.d(ConstantsUtil.MY_TAG, " packet: " + ConvertUtil.decimalToHexString(packet));
+                Log.d(ConstantsUtil.MY_TAG, "  ");
 
-                mListener.onUpdateUIFromMessage(hex, payload);
-            }
+
+                for (ReceiveMessage message: messages) {
+//                final String hex = ConvertUtil.decimalToHexString(message); // just for test TODO remove later
+                    final String hex = message.toHexa(); // just for test TODO remove later
+
+//                ReceiveMessage receiveMessage = new ReceiveMessage(message);
+                    String payload = message.getPayloadInBinary();
+
+//                Log.d(ConstantsUtil.MY_TAG, " message: " + ConvertUtil.decimalToHexString(message));
+
+                    mListener.onUpdateUIFromMessage(hex, payload);
+                }
+
 
         });
     }

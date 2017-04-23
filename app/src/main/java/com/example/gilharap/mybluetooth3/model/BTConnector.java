@@ -110,7 +110,7 @@ public class BTConnector {
     }
 
     // Call this from the main activity to mLst data to the remote device.
-    public void writeToSocket(byte[] bytes) {
+    private void writeToSocket(byte[] bytes) {
 
         OutputStream outStream = null;
         try {
@@ -121,7 +121,9 @@ public class BTConnector {
         }
 
         try {
-            outStream.write(bytes);
+            if(outStream != null){
+                outStream.write(bytes);
+            }
 
         } catch (IOException e) {
             // TODO add listener to ui print
@@ -206,14 +208,16 @@ public class BTConnector {
             // Keep listening to the InputStream until an exception occurs.
             while (true) {
 
+//                Arrays.fill(buffer, (byte)0);
 
                 try {
                     // Read from the InputStream.
                     numBytes = mInnput.read(buffer);
 
-                    Log.d(ConstantsUtil.MY_TAG, "numBytes: " + numBytes);
+                    Log.d(ConstantsUtil.MY_TAG + " 1", "numBytes: " + numBytes);
 
-                    mListener.onReceived(buffer);
+
+                    mListener.onReceived(buffer, numBytes);
 
                 } catch (IOException e) {
                     Log.d(ConstantsUtil.MY_TAG, "Input stream was disconnected", e);
@@ -267,6 +271,6 @@ public class BTConnector {
     }
 
     public interface MessageReceivedListener {
-        void onReceived(byte[] mBuffer);
+        void onReceived(byte[] mBuffer, int numBytes);
     }
 }
