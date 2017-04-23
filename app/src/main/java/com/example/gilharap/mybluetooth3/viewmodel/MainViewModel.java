@@ -16,8 +16,6 @@ import java.util.List;
 
 public class MainViewModel extends BaseObservable implements ViewModel{
 
-
-
     private Activity mActivity;
     private viewModelListener mListener;
     private BTConnector mConnector;
@@ -92,7 +90,7 @@ public class MainViewModel extends BaseObservable implements ViewModel{
         sendMessage.addPayload(current);
 
         mConnector.send(sendMessage);
-        mConnector.listenToIncomingMessages(sendMessage.getSize(), (buffer, numBytes) -> {
+        mConnector.listenToIncomingMessages((buffer, numBytes) -> {
 
 
                 List<Integer> positiveBuffer;

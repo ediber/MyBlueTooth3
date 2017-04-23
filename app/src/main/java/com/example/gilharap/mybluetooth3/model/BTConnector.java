@@ -62,8 +62,8 @@ public class BTConnector {
         writeToSocket(sendMessage.toBytes());
     }
 
-    public void listenToIncomingMessages(int receivingMessageSize, MessageReceivedListener listener) {
-        new AlreadyConnectedThread(mSocket, receivingMessageSize, listener).start();
+    public void listenToIncomingMessages(MessageReceivedListener listener) {
+        new AlreadyConnectedThread(mSocket, listener).start();
     }
 
     private List<String> showPairedDevices(MainViewModel.viewModelListener listener) {
@@ -175,17 +175,15 @@ public class BTConnector {
 
     public class AlreadyConnectedThread extends Thread {
 
-        private int mBufferSize;
         private InputStream mInnput;
 //    private Handler mHandler; // handler that gets info from Bluetooth service
 
 
         private MessageReceivedListener mListener;
 
-        public AlreadyConnectedThread(BluetoothSocket socket, int bufferSize,  MessageReceivedListener listener) {
+        public AlreadyConnectedThread(BluetoothSocket socket, MessageReceivedListener listener) {
             mListener = listener;
             mInnput = null;
-            mBufferSize = bufferSize;
 
             // Get the input and output streams; using temp objects because
             // member streams are final.
@@ -199,7 +197,6 @@ public class BTConnector {
         }
 
         public void run() {
-//            buffer = new byte[mBufferSize];
             byte[] buffer = new byte[ConstantsUtil.BUFFER_SIZE];
 
 
