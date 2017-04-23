@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import static android.content.ContentValues.TAG;
+
 
 public class BTConnector {
 
@@ -36,7 +38,11 @@ public class BTConnector {
             mSocket = mSelectedDevice.createRfcommSocketToServiceRecord(mSelectedDevice.getUuids()[0].getUuid());
 
         } catch (IOException e) {
-            e.printStackTrace();
+            try {
+                mSocket.close();
+            } catch (IOException closeException) {
+                Log.e(TAG, "Could not close the client socket", closeException);
+            }
         }
     }
 

@@ -11,7 +11,7 @@
     <style name="IndicatorStyle">
         <item name="android:layout_marginLeft">8dp</item>
         <item name="android:layout_marginRight">8dp</item>
-
+        <item name="android:background">@drawable/circle_blue</item>
     </style>
 
 </resources>
