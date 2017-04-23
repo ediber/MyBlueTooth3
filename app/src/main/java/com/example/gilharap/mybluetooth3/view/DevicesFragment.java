@@ -3,12 +3,12 @@ package com.example.gilharap.mybluetooth3.view;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
 
 import com.example.gilharap.mybluetooth3.PairedAdapter;
 import com.example.gilharap.mybluetooth3.R;
@@ -27,9 +27,6 @@ public class DevicesFragment extends Fragment {
 
     @BindView(R.id.devicesRecycler)
     RecyclerView recycler;
-
-    @BindView(R.id.text)
-    TextView text;
 
     private PairedAdapter mAdapter;
     private String[] mNames;
@@ -61,9 +58,9 @@ public class DevicesFragment extends Fragment {
 
         ArrayList<String> namesList = new ArrayList<>(Arrays.asList(mNames));
 
-        text.setText("aaa");
-
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
+        DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recycler.getContext(), linearLayoutManager.getOrientation());
+        recycler.addItemDecoration(dividerItemDecoration);
         recycler.setLayoutManager(linearLayoutManager);
         mAdapter = new PairedAdapter(namesList, new SelectListen());
         recycler.setAdapter(mAdapter);

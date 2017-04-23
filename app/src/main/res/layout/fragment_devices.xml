@@ -3,19 +3,26 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.example.gilharap.mybluetooth3.view.DevicesFragment"
-    android:orientation="vertical">
+    android:orientation="vertical"
 
-    <!-- TODO: Update blank fragment layout -->
+    >
+
     <TextView
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="paired mDevices"
-        android:id="@+id/text"/>
+        android:text="paired devices"
+        android:background="@color/colorHeader"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"/>
 
     <android.support.v7.widget.RecyclerView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:id="@+id/devicesRecycler"
+        android:paddingLeft="20dp"
+        android:paddingRight="20dp"
         >
 
     </android.support.v7.widget.RecyclerView>
