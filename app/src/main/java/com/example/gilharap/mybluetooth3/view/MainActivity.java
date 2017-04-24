@@ -1,13 +1,15 @@
 package com.example.gilharap.mybluetooth3.view;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
+import android.view.View;
+import android.view.WindowManager;
 import android.widget.FrameLayout;
 import android.widget.Toast;
 
-import com.example.gilharap.mybluetooth3.utils.FragmentSwapper;
 import com.example.gilharap.mybluetooth3.R;
+import com.example.gilharap.mybluetooth3.utils.FragmentSwapper;
 import com.example.gilharap.mybluetooth3.viewmodel.MainViewModel;
 
 import java.util.List;
@@ -15,12 +17,12 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-import static com.example.gilharap.mybluetooth3.utils.ConstantsUtil.CONNECT_FRAGMENT;
-
 public class MainActivity extends AppCompatActivity implements DevicesFragment.OnFragmentInteractionListener, ConnectFragment.OnFragmentInteractionListener {
 
     @BindView(R.id.frame)
-    FrameLayout frame;
+    FrameLayout mFrame;
+    @BindView(R.id.progressBar)
+    View mProgress;
 
     private FragmentSwapper mFragmentSwapper;
     private MainViewModel mMainViewModel;
@@ -48,6 +50,9 @@ public class MainActivity extends AppCompatActivity implements DevicesFragment.O
 
     @Override
     public void onConnect() {
+        mProgress.setVisibility(View.VISIBLE);
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE, WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+
         mMainViewModel.connect();
     }
 
@@ -82,13 +87,25 @@ public class MainActivity extends AppCompatActivity implements DevicesFragment.O
             Bundle bundle = new Bundle();
             bundle.putString(ConnectFragment.NAME1, deviceName);
            mConnectFragment = (ConnectFragment) mFragmentSwapper.swapToFragment(ConnectFragment.class, bundle, R.id.frame, true, true);
-//            mFragmentSwapper.addInitialFragment(mConnectFragment, bundle, R.id.frame, true, CONNECT_FRAGMENT);
+//            mFragmentSwapper.addInitialFragment(mConnectFragment, bundle, R.id.mFrame, true, CONNECT_FRAGMENT);
         }
 
         @Override
         public void onConnectionSuccess() {
             String message = "connection sucess";
             ToastOnUIThread(message);
+            mMainViewModel.showVersion();
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mProgress.setVisibility(View.GONE);
+                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+
+                    mConnectFragment.setUIState(ConnectFragment.State.CONNECTED);
+                }
+            });
+
         }
 
         @Override
@@ -102,13 +119,22 @@ public class MainActivity extends AppCompatActivity implements DevicesFragment.O
         }
 
         @Override
-        public void onUpdateUIFromMessage(String hex, String binary) {
+        public void onUpdateUIFromLOD(String hex, String binary) {
             MainActivity.this.runOnUiThread(new Runnable() {
                 public void run() {
-                    mConnectFragment.updateUI(hex, binary);
+                    mConnectFragment.updateUILOD(hex, binary);
                 }
             });
 
+        }
+
+        @Override
+        public void onUpdateUIFromVersion(String hex, String payload) {
+            MainActivity.this.runOnUiThread(new Runnable() {
+                public void run() {
+                    mConnectFragment.updateUIVersion(hex, payload);
+                }
+            });
         }
     }
 

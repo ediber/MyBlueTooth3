@@ -8,26 +8,24 @@ import android.util.Log;
 import com.example.gilharap.mybluetooth3.model.BTConnector;
 import com.example.gilharap.mybluetooth3.model.LODSendMessage;
 import com.example.gilharap.mybluetooth3.model.ReceiveMessage;
+import com.example.gilharap.mybluetooth3.model.VersionSendMessage;
 import com.example.gilharap.mybluetooth3.utils.ConstantsUtil;
 import com.example.gilharap.mybluetooth3.utils.ConvertUtil;
 
 import java.util.List;
 
 
-public class MainViewModel extends BaseObservable implements ViewModel{
+public class MainViewModel extends BaseObservable implements ViewModel {
 
     private Activity mActivity;
     private viewModelListener mListener;
     private BTConnector mConnector;
-    private  ConvertUtil mConvertUtil;
     private int mRecievedPackets = 0;
 
 
     public MainViewModel(Activity activity, viewModelListener listener) {
         mActivity = activity;
         mListener = listener;
-
-        mConvertUtil = new ConvertUtil();
     }
 
     @Override
@@ -45,7 +43,7 @@ public class MainViewModel extends BaseObservable implements ViewModel{
     }
 
     @Bindable
-    public String getRecievedPackets(){
+    public String getRecievedPackets() {
         return mRecievedPackets + "";
     }
 
@@ -91,32 +89,36 @@ public class MainViewModel extends BaseObservable implements ViewModel{
 
         mConnector.send(sendMessage);
         mConnector.listenToIncomingMessages((buffer, numBytes) -> {
-
-
-                List<Integer> positiveBuffer;
-                positiveBuffer = ConvertUtil.bytesToPositive(buffer);
-
-                List<ReceiveMessage> messages = ConvertUtil.bufferToPackets(positiveBuffer, numBytes);
-
-                Log.d(ConstantsUtil.MY_TAG, "  ");
-
-
-                for (ReceiveMessage message: messages) {
-//                final String hex = ConvertUtil.decimalToHexString(message); // just for test TODO remove later
-                    final String hex = message.toHexa(); // just for test TODO remove later
-
-//                ReceiveMessage receiveMessage = new ReceiveMessage(message);
-                    String payload = message.getPayloadInBinary();
-
-//                Log.d(ConstantsUtil.MY_TAG, " message: " + ConvertUtil.decimalToHexString(message));
-
-                    mListener.onUpdateUIFromMessage(hex, payload);
-                }
-
-
+            parseMessage(buffer, numBytes);
         });
     }
 
+    private void parseMessage(byte[] buffer, int numBytes) {
+        List<Integer> positiveBuffer;
+        positiveBuffer = ConvertUtil.bytesToPositive(buffer);
+
+        List<ReceiveMessage> messages = ConvertUtil.bufferToPackets(positiveBuffer, numBytes);
+
+        Log.d(ConstantsUtil.GENERAL_TAG, "  ");
+
+
+        for (ReceiveMessage message : messages) {
+            final String hex = message.toHexa(); // just for test TODO remove later
+            String payload = message.getPayloadInBinary();
+
+            switch (message.getmType()) {
+                case LOD:
+//                Log.d(ConstantsUtil.GENERAL_TAG, " message: " + ConvertUtil.decimalToHexString(message));
+                    mListener.onUpdateUIFromLOD(hex, payload);
+                    break;
+
+                case VERSION:
+                    mListener.onUpdateUIFromVersion(hex, payload);
+                    break;
+            }
+
+        }
+    }
 
 
     public void stop() {
@@ -125,6 +127,15 @@ public class MainViewModel extends BaseObservable implements ViewModel{
         mConnector.send(message);
     }
 
+    public void showVersion() {
+        VersionSendMessage message = new VersionSendMessage();
+        message.setStart();
+        mConnector.send(message);
+
+        mConnector.listenToIncomingMessages((buffer, numBytes) -> {
+            parseMessage(buffer, numBytes);
+        });
+    }
 
     @Override
     public void onPause() {
@@ -141,16 +152,21 @@ public class MainViewModel extends BaseObservable implements ViewModel{
 
     }
 
-    public interface viewModelListener{
+
+    public interface viewModelListener {
         void onShowPairedDevices(List<String> deviceNames);
+
         void showDeviceDetails(String deviceName);
 
         void onConnectionSuccess();
+
         void onConnectionError();
 
         void onDisconnectFailed();
 
-        void onUpdateUIFromMessage(String hex, String binary);
+        void onUpdateUIFromLOD(String hex, String binary);
+
+        void onUpdateUIFromVersion(String hex, String payload);
     }
 
 

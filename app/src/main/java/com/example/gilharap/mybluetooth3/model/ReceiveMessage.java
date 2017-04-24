@@ -8,14 +8,22 @@ import java.util.List;
 
 
 public class ReceiveMessage {
-    protected List<Integer> mLst;
-    protected int payLoadPosition = 4;
 
-    public ReceiveMessage(List<Integer> lst) {
-        mLst = lst;
+
+
+    public enum MessageType {
+        LOD,
+        VERSION;
     }
 
+    protected List<Integer> mLst;
+    protected int payLoadPosition = 4;
+    private MessageType mType;
 
+    public ReceiveMessage(List<Integer> lst, MessageType type) {
+        mLst = lst;
+        mType = type;
+    }
 
     public String getPayloadInBinary() {
         String payload = "";
@@ -30,5 +38,9 @@ public class ReceiveMessage {
 
     public String toHexa() {
         return ConvertUtil.decimalToHexString(mLst);
+    }
+
+    public MessageType getmType() {
+        return mType;
     }
 }

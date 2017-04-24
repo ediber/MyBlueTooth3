@@ -12,7 +12,7 @@ public abstract class SendMessage {
     private int payloadCount = 0;
 
 
-    public abstract int getSize();
+//    public abstract int getSize();
 
     public byte[] toBytes() {
         return ConvertUtil.ByteListToArray(bytes);
@@ -30,7 +30,7 @@ public abstract class SendMessage {
         bytes.set(2, countByte);
     }
 
-    public void setStart() {
+    protected void setStart() {
         bytes = new ArrayList<>(Arrays.asList(
                 (byte) 0xDA,
                 (byte) 0xDE,
@@ -38,7 +38,7 @@ public abstract class SendMessage {
         ));
     }
 
-    public void setStop() {
+    protected void setStop() {
         bytes = new ArrayList<>(Arrays.asList(
                 (byte) 0xDA,
                 (byte) 0xDE,

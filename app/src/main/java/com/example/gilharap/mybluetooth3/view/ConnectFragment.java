@@ -24,6 +24,10 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
+import static com.example.gilharap.mybluetooth3.view.ConnectFragment.State.DISCONNECTED;
+import static com.example.gilharap.mybluetooth3.view.ConnectFragment.State.STARTED;
+import static com.example.gilharap.mybluetooth3.view.ConnectFragment.State.STOPPED;
+
 
 public class ConnectFragment extends Fragment {
 
@@ -32,9 +36,13 @@ public class ConnectFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
     private String mName;
+    private State mState;
 
     @BindView(R.id.connectName)
     TextView mNameView;
+
+    @BindView(R.id.connectVersion)
+    TextView mVersionView;
 
     @BindView(R.id.select)
     View mConnect;
@@ -59,6 +67,8 @@ public class ConnectFragment extends Fragment {
 
     @BindView(R.id.indicatorsLayoutNegative)
     LinearLayout mIndicatorsLayout2;
+
+
 
 
     public ConnectFragment() {
@@ -101,18 +111,24 @@ public class ConnectFragment extends Fragment {
 
         mDissconect.setOnClickListener((View v) -> {
             mListener.onDisConnect();
+            setUIState(DISCONNECTED);
         });
 
         mStart.setOnClickListener((View v) -> {
             mListener.onStartRequest(mSpinnerLevel.getSelectedItemPosition(), mSpinnerCurrent.getSelectedItemPosition());
+            setUIState(STARTED);
         });
 
         mStop.setOnClickListener((View v) -> {
             mListener.onStopRequest();
+            setUIState(STOPPED);
         });
+
+        setUIState(DISCONNECTED);
 
         return view;
     }
+
 
 
     @Override
@@ -132,20 +148,20 @@ public class ConnectFragment extends Fragment {
         mListener = null;
     }
 
-    public void updateUI(String hex, String binary) {
+    public void updateUILOD(String hex, String binary) {
         for (int i = 0; i < binary.length() / 2; i++) {
             if (binary.charAt(i) == '0') { // attached
 
                 mIndicatorsLayout1.getChildAt(i).setBackground(ContextCompat.getDrawable(getContext(), R.drawable.circle_green));
 
-//                Log.d(ConstantsUtil.MY_TAG, "positive 0, green");
+//                Log.d(ConstantsUtil.GENERAL_TAG, "positive 0, green");
             } else {
 
-                mIndicatorsLayout2.getChildAt(i).setBackground(ContextCompat.getDrawable(getContext(), R.drawable.circle_red));
+                mIndicatorsLayout1.getChildAt(i).setBackground(ContextCompat.getDrawable(getContext(), R.drawable.circle_red));
 
-//                Log.d(ConstantsUtil.MY_TAG, "positive 1, red");
+//                Log.d(ConstantsUtil.GENERAL_TAG, "positive 1, red");
             }
-//            Log.d(ConstantsUtil.MY_TAG, "index to circle positive: " + i);
+//            Log.d(ConstantsUtil.GENERAL_TAG, "index to circle positive: " + i);
         }
 
         int layoutIndex = 0;
@@ -154,18 +170,22 @@ public class ConnectFragment extends Fragment {
 
                 mIndicatorsLayout2.getChildAt(layoutIndex).setBackground(ContextCompat.getDrawable(getContext(), R.drawable.circle_green));
 
-//                Log.d(ConstantsUtil.MY_TAG, "negative 0, green");
+//                Log.d(ConstantsUtil.GENERAL_TAG, "negative 0, green");
             } else {
 
                 mIndicatorsLayout2.getChildAt(layoutIndex).setBackground(ContextCompat.getDrawable(getContext(), R.drawable.circle_red));
 
-//                Log.d(ConstantsUtil.MY_TAG, "negative 1, red");
+//                Log.d(ConstantsUtil.GENERAL_TAG, "negative 1, red");
             }
 
-//            Log.d(ConstantsUtil.MY_TAG, "index to circle negative: " + i);
+//            Log.d(ConstantsUtil.GENERAL_TAG, "index to circle negative: " + i);
 
             layoutIndex++;
         }
+    }
+
+    public void updateUIVersion(String hex, String payload) {
+        mVersionView.setText(hex);
     }
 
     private void setSpinners() {
@@ -181,6 +201,54 @@ public class ConnectFragment extends Fragment {
         mSpinnerCurrent.setAdapter(currentArrayAdapter);
     }
 
+    public void setUIState(State state) {
+        switch (state){
+            case DISCONNECTED:
+                mConnect.setEnabled(true);
+                mStart.setEnabled(false);
+                mDissconect.setEnabled(false);
+                mStop.setEnabled(false);
+                mSpinnerLevel.setEnabled(false);
+                mSpinnerCurrent.setEnabled(false);
+                break;
+
+            case CONNECTED:
+                mConnect.setEnabled(false);
+                mStart.setEnabled(true);
+                mDissconect.setEnabled(true);
+                mStop.setEnabled(false);
+                mSpinnerLevel.setEnabled(true);
+                mSpinnerCurrent.setEnabled(true);
+                break;
+
+            case STARTED:
+                mConnect.setEnabled(false);
+                mStart.setEnabled(false);
+                mDissconect.setEnabled(false);
+                mStop.setEnabled(true);
+                mSpinnerLevel.setEnabled(false);
+                mSpinnerCurrent.setEnabled(false);
+                break;
+
+            case STOPPED:
+                mConnect.setEnabled(false);
+                mStart.setEnabled(true);
+                mDissconect.setEnabled(true);
+                mStop.setEnabled(false);
+                mSpinnerLevel.setEnabled(true);
+                mSpinnerCurrent.setEnabled(true);
+                break;
+        }
+    }
+
+    @Override
+    public void onStop() {
+        mListener.onDisConnect();
+        super.onStop();
+    }
+
+
+
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onConnect();
@@ -190,6 +258,13 @@ public class ConnectFragment extends Fragment {
         void onStartRequest(int selectedItemPosition, int selectedItemPosition1);
 
         void onStopRequest();
+    }
+
+    public enum State{
+        DISCONNECTED,
+        CONNECTED,
+        STARTED,
+        STOPPED
     }
 
 }

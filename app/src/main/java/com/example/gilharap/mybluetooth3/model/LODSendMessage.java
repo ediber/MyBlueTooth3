@@ -21,9 +21,4 @@ public class LODSendMessage extends SendMessage {
         bytes.add((byte) 0x00);
     }
 
-
-    @Override
-    public int getSize() {
-        return 9;
-    }
 }

@@ -38,10 +38,10 @@
             android:id="@+id/select"
             android:layout_width="150dp"
             android:layout_height="wrap_content"
-            android:layout_marginTop="17dp"
             android:text="connect"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@+id/dissconect"
+            android:layout_marginTop="56dp"
             app:layout_constraintTop_toBottomOf="@+id/connectName" />
 
         <Button
@@ -117,9 +117,10 @@
             android:layout_height="wrap_content"
 
             android:text="effectiveTransferRate:"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="29dp"
             app:layout_constraintTop_toBottomOf="@+id/textView"
-            app:layout_constraintLeft_toLeftOf="@+id/textView" />
+            app:layout_constraintLeft_toLeftOf="@+id/textView"
+            android:layout_marginLeft="0dp" />
 
         <TextView
             android:id="@+id/effectiveTransferRate"
@@ -135,32 +136,31 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="recievedPackets:"
-            android:layout_marginLeft="82dp"
-            app:layout_constraintLeft_toLeftOf="parent"
-            android:layout_marginTop="68dp"
-            app:layout_constraintTop_toBottomOf="@+id/current"
-            android:layout_marginStart="82dp" />
+            android:layout_marginTop="31dp"
+            app:layout_constraintTop_toBottomOf="@+id/textView6"
+            android:layout_marginLeft="0dp"
+            app:layout_constraintLeft_toLeftOf="@+id/textView6" />
 
 
         <Spinner
             android:id="@+id/level"
             android:layout_width="186dp"
             android:layout_height="20dp"
-            android:layout_marginLeft="33dp"
             android:layout_marginStart="33dp"
+            android:layout_marginLeft="44dp"
             app:layout_constraintLeft_toLeftOf="@+id/guideline2"
-            android:layout_marginTop="31dp"
+            android:layout_marginTop="35dp"
             app:layout_constraintTop_toBottomOf="@+id/start" />
 
         <Spinner
             android:id="@+id/current"
             android:layout_width="186dp"
             android:layout_height="20dp"
+            android:layout_marginStart="3dp"
             android:layout_marginLeft="0dp"
             app:layout_constraintLeft_toLeftOf="@+id/level"
-            android:layout_marginTop="30dp"
-            app:layout_constraintTop_toBottomOf="@+id/level"
-            android:layout_marginStart="3dp" />
+            android:layout_marginTop="29dp"
+            app:layout_constraintTop_toBottomOf="@+id/level" />
 
 
         <TextView
@@ -304,6 +304,26 @@
                 style="@style/IndicatorStyle"/>
 
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/connectVersion"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TextView"
+            app:layout_constraintTop_toTopOf="@+id/textView6"
+            android:layout_marginTop="0dp"
+            android:layout_marginRight="42dp"
+            app:layout_constraintRight_toRightOf="parent" />
+
+        <TextView
+            android:id="@+id/textView6"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="48dp"
+            android:text="version"
+            app:layout_constraintTop_toBottomOf="@+id/current"
+            android:layout_marginLeft="62dp"
+            app:layout_constraintLeft_toLeftOf="@+id/guideline2" />
 
 
     </android.support.constraint.ConstraintLayout>

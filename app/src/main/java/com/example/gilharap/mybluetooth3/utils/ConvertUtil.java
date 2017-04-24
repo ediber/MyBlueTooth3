@@ -1,5 +1,6 @@
 package com.example.gilharap.mybluetooth3.utils;
 
+import android.support.annotation.Nullable;
 import android.util.Log;
 
 import com.example.gilharap.mybluetooth3.model.ReceiveMessage;
@@ -81,8 +82,8 @@ public class ConvertUtil {
         int from = 0;
         int to;
 
-        Log.d(ConstantsUtil.MY_TAG + " 2", "current buffer: " + ConvertUtil.decimalToHexString(buffer));
-        Log.d(ConstantsUtil.MY_TAG + " 3", "left buffer initial: " + ConvertUtil.decimalToHexString(mLeft));
+        Log.d(ConstantsUtil.GENERAL_TAG + " 2", "current buffer: " + ConvertUtil.decimalToHexString(buffer));
+        Log.d(ConstantsUtil.GENERAL_TAG + " 3", "left buffer initial: " + ConvertUtil.decimalToHexString(mLeft));
 
         numBytes = numBytes + mLeft.size(); // updating to number of bytes for combined list
 
@@ -100,20 +101,22 @@ public class ConvertUtil {
                 to = from + messageLength - 1;
 
                 if (to >= numBytes) { // message is not full
-                    Log.d(ConstantsUtil.MY_TAG + " 4", "to index: " + to);
-                    Log.d(ConstantsUtil.MY_TAG + " 4", "numBytes - 1 index: " + (numBytes - 1));
+                    Log.d(ConstantsUtil.GENERAL_TAG + " 4", "to index: " + to);
+                    Log.d(ConstantsUtil.GENERAL_TAG + " 4", "numBytes - 1 index: " + (numBytes - 1));
                     List<Integer> packet = buffer.subList(from, numBytes);
-                    Log.d(ConstantsUtil.MY_TAG + " 5", "too short packet: " + ConvertUtil.decimalToHexString(packet));
+                    Log.d(ConstantsUtil.GENERAL_TAG + " 5", "too short packet: " + ConvertUtil.decimalToHexString(packet));
                     mLeft = packet;
                 } else { // message reached full length
 
                     List<Integer> packet = buffer.subList(from, to + 1);
                     // TODO may be remove
                     if (validate(packet)) {
-                        Log.d(ConstantsUtil.MY_TAG + " 5", "message created: " + ConvertUtil.decimalToHexString(packet));
-                        lst.add(new ReceiveMessage(packet));
+                        Log.d(ConstantsUtil.GENERAL_TAG + " 5", "message created: " + ConvertUtil.decimalToHexString(packet));
+
+                        ReceiveMessage message = createMessageByType(packet);
+                        lst.add(message);
                     } else {
-                        Log.d(ConstantsUtil.MY_TAG + " 5", "wrong packet: " + ConvertUtil.decimalToHexString(packet));
+                        Log.d(ConstantsUtil.GENERAL_TAG + " 5", "wrong packet: " + ConvertUtil.decimalToHexString(packet));
 //                        mLeft = packet;
                     }
 
@@ -124,6 +127,21 @@ public class ConvertUtil {
 
 
         return lst;
+    }
+
+    @Nullable
+    private static ReceiveMessage createMessageByType(List<Integer> packet) {
+        ReceiveMessage message = null;
+
+        switch (packet.get(3)){ // get type of message
+            case 0x21:
+                message = new ReceiveMessage(packet, ReceiveMessage.MessageType.LOD);
+                break;
+            case 0x01:
+                message = new ReceiveMessage(packet, ReceiveMessage.MessageType.VERSION);
+                break;
+        }
+        return message;
     }
 
     private static List<Integer> deepCopy(List<Integer> lst) {

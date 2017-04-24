@@ -26,6 +26,7 @@ public class BTConnector {
     private BluetoothAdapter mBtAdapter;
     private ArrayList<BluetoothDevice> mPairedDevicesList;
     private BluetoothDevice mSelectedDevice;
+    private ConnectingThread mConnectingThread;
 
     public BTConnector() {
         mBtAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -36,18 +37,20 @@ public class BTConnector {
         try {
             // TODO make in new thread
             mSocket = mSelectedDevice.createRfcommSocketToServiceRecord(mSelectedDevice.getUuids()[0].getUuid());
+            Log.d(ConstantsUtil.CONNECTION_TAG + " 1", "socket created");
 
         } catch (IOException e) {
             try {
                 mSocket.close();
+                Log.d(ConstantsUtil.CONNECTION_TAG + " 1", "socket closed");
             } catch (IOException closeException) {
-                Log.e(TAG, "Could not close the client socket", closeException);
+                Log.d(ConstantsUtil.CONNECTION_TAG + " 1", "Could not close socket", closeException);
             }
         }
     }
 
     public void connect(SocketConnectedListener listener) {
-        new ConnectingThread(new SocketConnectedListener() {
+         mConnectingThread = new ConnectingThread(new SocketConnectedListener() {
             @Override
             public void onConnectionSuccess() {
                 listener.onConnectionSuccess();
@@ -57,11 +60,14 @@ public class BTConnector {
             public void onConnectionError() {
                 listener.onConnectionError();
             }
-        }).start();
+        });
+
+        mConnectingThread.start();
     }
 
     public void disconnect(SocketDisConnectListener listener) {
-        new DisconnectingThread(mSocket, listener).start();
+//        new DisconnectingThread(mSocket, listener).start();
+        mConnectingThread.cancel();
     }
 
     public void send(SendMessage sendMessage) {
@@ -154,10 +160,23 @@ public class BTConnector {
             BluetoothAdapter.getDefaultAdapter().cancelDiscovery();
             try {
                 mSocket.connect();
+                Log.d(ConstantsUtil.CONNECTION_TAG + " 2", "socket connected");
                 listener.onConnectionSuccess();
             } catch (IOException e) {
                 e.printStackTrace();
+                Log.d(ConstantsUtil.CONNECTION_TAG + " 2", "socket connection error", e);
                 listener.onConnectionError();
+            }
+        }
+
+        // Closes the client socket and causes the thread to finish.
+        public void cancel() {
+            try {
+                mSocket.close();
+                Log.d(ConstantsUtil.CONNECTION_TAG + " 3", "socket closed");
+            } catch (IOException e) {
+                Log.d(ConstantsUtil.CONNECTION_TAG + " 3", "socket close error", e);
+                Log.e(TAG, "Could not close the client socket", e);
             }
         }
     }
@@ -197,7 +216,7 @@ public class BTConnector {
             try {
                 mInnput = socket.getInputStream();
             } catch (IOException e) {
-                Log.e(ConstantsUtil.MY_TAG, "Error occurred when creating input stream", e);
+                Log.e(ConstantsUtil.GENERAL_TAG, "Error occurred when creating input stream", e);
             }
 
         }
@@ -217,13 +236,14 @@ public class BTConnector {
                     // Read from the InputStream.
                     numBytes = mInnput.read(buffer);
 
-                    Log.d(ConstantsUtil.MY_TAG + " 1", "numBytes: " + numBytes);
+                    Log.d(ConstantsUtil.GENERAL_TAG + " 1", "buffer initial: " + buffer);
+                    Log.d(ConstantsUtil.GENERAL_TAG + " 1", "numBytes: " + numBytes);
 
 
                     mListener.onReceived(buffer, numBytes);
 
                 } catch (IOException e) {
-                    Log.d(ConstantsUtil.MY_TAG, "Input stream was disconnected", e);
+                    Log.d(ConstantsUtil.GENERAL_TAG, "Input stream was disconnected", e);
                     break;
                 }
 
@@ -233,8 +253,8 @@ public class BTConnector {
 
                     // Read from the InputStream.
                     numBytes = mInnput.read(initBuffer);
-                    Log.d(ConstantsUtil.MY_TAG, "num first Bytes: " + numBytes);
-                    Log.d(ConstantsUtil.MY_TAG, " first buffer: " + ConvertUtil.decimalToHexString(initBuffer));
+                    Log.d(ConstantsUtil.GENERAL_TAG, "num first Bytes: " + numBytes);
+                    Log.d(ConstantsUtil.GENERAL_TAG, " first buffer: " + ConvertUtil.decimalToHexString(initBuffer));
 
                     int bytesLeftSize = (int)(initBuffer[2] & 0xFF) + 4;
 
@@ -242,8 +262,8 @@ public class BTConnector {
                     byte[] leftBuffer = new byte[bytesLeftSize];
                     numBytes = mInnput.read(leftBuffer);
 
-                    Log.d(ConstantsUtil.MY_TAG, "num left Bytes: " + numBytes);
-                    Log.d(ConstantsUtil.MY_TAG, "second buffer: " + ConvertUtil.decimalToHexString(leftBuffer));
+                    Log.d(ConstantsUtil.GENERAL_TAG, "num left Bytes: " + numBytes);
+                    Log.d(ConstantsUtil.GENERAL_TAG, "second buffer: " + ConvertUtil.decimalToHexString(leftBuffer));
 
                     byte[] both = new byte[initBuffer.length + leftBuffer.length];
                     System.arraycopy(initBuffer, 0, both, 0, initBuffer.length);
@@ -252,7 +272,7 @@ public class BTConnector {
                     mListener.onReceived(both);
 
                 } catch (IOException e) {
-                        Log.d(ConstantsUtil.MY_TAG, "Input stream was disconnected", e);
+                        Log.d(ConstantsUtil.GENERAL_TAG, "Input stream was disconnected", e);
                     break;
                 }*/
             }
