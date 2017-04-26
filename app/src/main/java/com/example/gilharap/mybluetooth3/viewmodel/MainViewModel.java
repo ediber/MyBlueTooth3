@@ -34,8 +34,7 @@ public class MainViewModel extends BaseObservable implements ViewModel {
 //        mBtAdapter = BluetoothAdapter.getDefaultAdapter();
         mConnector = new BTConnector();
         showPairedDevices();
-
-        // TODO on activity result
+        new ConvertUtil(); // call constructor to initialize ConvertUtil inner list of binaries
     }
 
     public void showPairedDevices() {
@@ -87,7 +86,13 @@ public class MainViewModel extends BaseObservable implements ViewModel {
         sendMessage.addPayload(level);
         sendMessage.addPayload(current);
 
-        mConnector.send(sendMessage);
+        mConnector.send(sendMessage, new BTConnector.MessageSentListener() {
+            @Override
+            public void onError(String error) {
+                mListener.onStartError(error);
+            }
+        });
+
         mConnector.listenToIncomingMessages((buffer, numBytes) -> {
             parseMessage(buffer, numBytes);
         });
@@ -124,13 +129,23 @@ public class MainViewModel extends BaseObservable implements ViewModel {
     public void stop() {
         LODSendMessage message = new LODSendMessage();
         message.setStop();
-        mConnector.send(message);
+        mConnector.send(message, new BTConnector.MessageSentListener() {
+            @Override
+            public void onError(String error) {
+                mListener.onStopError(error);
+            }
+        });
     }
 
     public void showVersion() {
         VersionSendMessage message = new VersionSendMessage();
         message.setStart();
-        mConnector.send(message);
+        mConnector.send(message, new BTConnector.MessageSentListener() {
+            @Override
+            public void onError(String error) {
+
+            }
+        });
 
         mConnector.listenToIncomingMessages((buffer, numBytes) -> {
             parseMessage(buffer, numBytes);
@@ -167,6 +182,10 @@ public class MainViewModel extends BaseObservable implements ViewModel {
         void onUpdateUIFromLOD(String hex, String binary);
 
         void onUpdateUIFromVersion(String hex, String payload);
+
+        void onStopError(String error);
+
+        void onStartError(String error);
     }
 
 

@@ -33,11 +33,12 @@ public class ConvertUtil {
     public static String decimalToHexString(List<Integer> lst) {
         final char[] hexArray = "0123456789ABCDEF".toCharArray();
 
-        char[] hexChars = new char[lst.size() * 2];
+        char[] hexChars = new char[lst.size() * 3];
         for (int j = 0; j < lst.size(); j++) {
             int v = lst.get(j);
-            hexChars[j * 2] = hexArray[v >>> 4];
-            hexChars[j * 2 + 1] = hexArray[v & 0x0F];
+            hexChars[j * 3] = hexArray[v >>> 4];
+            hexChars[j * 3 + 1] = hexArray[v & 0x0F];
+            hexChars[j * 3 + 2] = ' ';
         }
         return new String(hexChars);
     }

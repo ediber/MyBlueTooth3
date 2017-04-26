@@ -50,7 +50,7 @@ public class BTConnector {
     }
 
     public void connect(SocketConnectedListener listener) {
-         mConnectingThread = new ConnectingThread(new SocketConnectedListener() {
+        mConnectingThread = new ConnectingThread(new SocketConnectedListener() {
             @Override
             public void onConnectionSuccess() {
                 listener.onConnectionSuccess();
@@ -70,8 +70,8 @@ public class BTConnector {
         mConnectingThread.cancel();
     }
 
-    public void send(SendMessage sendMessage) {
-        writeToSocket(sendMessage.toBytes());
+    public void send(SendMessage sendMessage, MessageSentListener listener) {
+        writeToSocket(sendMessage.toBytes(), listener);
     }
 
     public void listenToIncomingMessages(MessageReceivedListener listener) {
@@ -122,27 +122,26 @@ public class BTConnector {
     }
 
     // Call this from the main activity to mLst data to the remote device.
-    private void writeToSocket(byte[] bytes) {
+    private void writeToSocket(byte[] bytes, MessageSentListener listener) {
 
         OutputStream outStream = null;
         try {
             outStream = mSocket.getOutputStream();
         } catch (IOException e) {
-            // TODO add listener to ui print
+            listener.onError("Error occurred when creating output stream");
             Log.e("tag", "Error occurred when creating output stream", e);
         }
 
         try {
-            if(outStream != null){
+            if (outStream != null) {
                 outStream.write(bytes);
             }
 
         } catch (IOException e) {
-            // TODO add listener to ui print
+            listener.onError("Error occurred when sending data");
             Log.e("tag", "Error occurred when sending data", e);
         }
     }
-
 
 
     private class ConnectingThread extends Thread {
@@ -290,7 +289,7 @@ public class BTConnector {
     }
 
     public interface MessageSentListener {
-        void onSent();
+        void onError(String error);
     }
 
     public interface MessageReceivedListener {

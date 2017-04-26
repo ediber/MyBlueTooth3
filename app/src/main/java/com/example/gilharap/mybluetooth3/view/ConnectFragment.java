@@ -63,10 +63,10 @@ public class ConnectFragment extends Fragment {
     Spinner mSpinnerCurrent;
 
     @BindView(R.id.indicatorsLayoutPositive)
-    LinearLayout mIndicatorsLayout1;
+    LinearLayout mIndicatorsLayoutPositive;
 
     @BindView(R.id.indicatorsLayoutNegative)
-    LinearLayout mIndicatorsLayout2;
+    LinearLayout mIndicatorsLayoutNegative;
 
 
 
@@ -152,12 +152,12 @@ public class ConnectFragment extends Fragment {
         for (int i = 0; i < binary.length() / 2; i++) {
             if (binary.charAt(i) == '0') { // attached
 
-                mIndicatorsLayout1.getChildAt(i).setBackground(ContextCompat.getDrawable(getContext(), R.drawable.circle_green));
+                mIndicatorsLayoutPositive.getChildAt(i).setBackground(ContextCompat.getDrawable(getContext(), R.drawable.circle_green));
 
 //                Log.d(ConstantsUtil.GENERAL_TAG, "positive 0, green");
             } else {
 
-                mIndicatorsLayout1.getChildAt(i).setBackground(ContextCompat.getDrawable(getContext(), R.drawable.circle_red));
+                mIndicatorsLayoutPositive.getChildAt(i).setBackground(ContextCompat.getDrawable(getContext(), R.drawable.circle_red));
 
 //                Log.d(ConstantsUtil.GENERAL_TAG, "positive 1, red");
             }
@@ -168,12 +168,12 @@ public class ConnectFragment extends Fragment {
         for (int i = binary.length() / 2; i < binary.length(); i++) {
             if (binary.charAt(i) == '0') { // attached
 
-                mIndicatorsLayout2.getChildAt(layoutIndex).setBackground(ContextCompat.getDrawable(getContext(), R.drawable.circle_green));
+                mIndicatorsLayoutNegative.getChildAt(layoutIndex).setBackground(ContextCompat.getDrawable(getContext(), R.drawable.circle_green));
 
 //                Log.d(ConstantsUtil.GENERAL_TAG, "negative 0, green");
             } else {
 
-                mIndicatorsLayout2.getChildAt(layoutIndex).setBackground(ContextCompat.getDrawable(getContext(), R.drawable.circle_red));
+                mIndicatorsLayoutNegative.getChildAt(layoutIndex).setBackground(ContextCompat.getDrawable(getContext(), R.drawable.circle_red));
 
 //                Log.d(ConstantsUtil.GENERAL_TAG, "negative 1, red");
             }
@@ -210,6 +210,8 @@ public class ConnectFragment extends Fragment {
                 mStop.setEnabled(false);
                 mSpinnerLevel.setEnabled(false);
                 mSpinnerCurrent.setEnabled(false);
+                setNeutrall(mIndicatorsLayoutPositive);
+                setNeutrall(mIndicatorsLayoutNegative);
                 break;
 
             case CONNECTED:
@@ -237,16 +239,25 @@ public class ConnectFragment extends Fragment {
                 mStop.setEnabled(false);
                 mSpinnerLevel.setEnabled(true);
                 mSpinnerCurrent.setEnabled(true);
+                setNeutrall(mIndicatorsLayoutPositive);
+                setNeutrall(mIndicatorsLayoutNegative);
                 break;
+        }
+    }
+
+    private void setNeutrall(LinearLayout layout) {
+        for (int i = 0; i < layout.getChildCount(); i++) {
+            layout.getChildAt(i).setBackground(ContextCompat.getDrawable(getContext(), R.drawable.circle_blue));
         }
     }
 
     @Override
     public void onStop() {
+        mListener.onStopRequest();
         mListener.onDisConnect();
+        setUIState(DISCONNECTED);
         super.onStop();
     }
-
 
 
     public interface OnFragmentInteractionListener {

@@ -110,7 +110,18 @@ public class MainActivity extends AppCompatActivity implements DevicesFragment.O
 
         @Override
         public void onConnectionError() {
-            ToastOnUIThread("connection failed");
+            String message = "connection failed";
+            ToastOnUIThread(message);
+            mMainViewModel.showVersion();
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    mProgress.setVisibility(View.GONE);
+                    getWindow().clearFlags(WindowManager.LayoutParams.FLAG_NOT_TOUCHABLE);
+                }
+            });
+
         }
 
         @Override
@@ -134,6 +145,22 @@ public class MainActivity extends AppCompatActivity implements DevicesFragment.O
                 public void run() {
                     mConnectFragment.updateUIVersion(hex, payload);
                 }
+            });
+        }
+
+        @Override
+        public void onStopError(String error) {
+            MainActivity.this.runOnUiThread(() -> {
+                mConnectFragment.setUIState(ConnectFragment.State.STARTED);
+                Toast.makeText(MainActivity.this, error, Toast.LENGTH_LONG).show();
+            });
+        }
+
+        @Override
+        public void onStartError(String error) {
+            MainActivity.this.runOnUiThread(() -> {
+                mConnectFragment.setUIState(ConnectFragment.State.CONNECTED);
+                Toast.makeText(MainActivity.this, error, Toast.LENGTH_LONG).show();
             });
         }
     }
