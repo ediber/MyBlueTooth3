@@ -13,16 +13,13 @@ import com.example.gilharap.mybluetooth3.model.VersionSendMessage;
 import com.example.gilharap.mybluetooth3.utils.ConstantsUtil;
 import com.example.gilharap.mybluetooth3.utils.ConvertUtil;
 import com.example.gilharap.mybluetooth3.utils.DateUtil;
+import com.example.gilharap.mybluetooth3.utils.ParseUtil;
 
 import java.util.Date;
 import java.util.List;
 
 import static com.example.gilharap.mybluetooth3.utils.DateUtil.dateToStr;
 import static com.example.gilharap.mybluetooth3.utils.DateUtil.getCurrentDate;
-
-/*import com.example.gilharap.mybluetooth3.utils.ConstantsUtil;
-import com.example.gilharap.mybluetooth3.utils.ConvertUtil;
-import com.example.gilharap.mybluetooth3.utils.DateUtil;*/
 
 
 public class MainViewModel extends BaseObservable implements ViewModel {
@@ -172,7 +169,7 @@ public class MainViewModel extends BaseObservable implements ViewModel {
         List<Integer> positiveBuffer;
         positiveBuffer = ConvertUtil.bytesToPositive(buffer);
 
-        List<ReceiveMessage> messages = ConvertUtil.bufferToPackets(positiveBuffer, numBytes);
+        List<ReceiveMessage> messages = ParseUtil.bufferToPackets(positiveBuffer, numBytes);
 
         Log.d(ConstantsUtil.GENERAL_TAG, "  ");
 
