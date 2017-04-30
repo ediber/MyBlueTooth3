@@ -2,9 +2,7 @@ package com.example.gilharap.mybluetooth3.view;
 
 import android.content.Context;
 import android.databinding.DataBindingUtil;
-import android.databinding.ViewDataBinding;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.view.LayoutInflater;
@@ -16,6 +14,8 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.example.gilharap.mybluetooth3.R;
+import com.example.gilharap.mybluetooth3.databinding.FragmentConnectBinding;
+import com.example.gilharap.mybluetooth3.viewmodel.MainViewModel;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -89,13 +89,12 @@ public class ConnectFragment extends Fragment {
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 //        View view = inflater.inflate(R.layout.fragment_connect, container, false);
 
-        ViewDataBinding binding = DataBindingUtil.inflate(
-                inflater, R.layout.fragment_connect, container, false);
-
+        FragmentConnectBinding binding = DataBindingUtil.inflate(inflater, R.layout.fragment_connect, container, false);
+        binding.setViewModel(MainViewModel.getInstance(null, null));
         View view = binding.getRoot();
 
 

@@ -5,27 +5,58 @@ import android.databinding.BaseObservable;
 import android.databinding.Bindable;
 import android.util.Log;
 
+import com.example.gilharap.mybluetooth3.BR;
 import com.example.gilharap.mybluetooth3.model.BTConnector;
 import com.example.gilharap.mybluetooth3.model.LODSendMessage;
 import com.example.gilharap.mybluetooth3.model.ReceiveMessage;
 import com.example.gilharap.mybluetooth3.model.VersionSendMessage;
 import com.example.gilharap.mybluetooth3.utils.ConstantsUtil;
 import com.example.gilharap.mybluetooth3.utils.ConvertUtil;
+import com.example.gilharap.mybluetooth3.utils.DateUtil;
 
+import java.util.Date;
 import java.util.List;
+
+import static com.example.gilharap.mybluetooth3.utils.DateUtil.dateToStr;
+import static com.example.gilharap.mybluetooth3.utils.DateUtil.getCurrentDate;
+
+/*import com.example.gilharap.mybluetooth3.utils.ConstantsUtil;
+import com.example.gilharap.mybluetooth3.utils.ConvertUtil;
+import com.example.gilharap.mybluetooth3.utils.DateUtil;*/
 
 
 public class MainViewModel extends BaseObservable implements ViewModel {
 
+    private static MainViewModel mInstance = null;
+
     private Activity mActivity;
     private viewModelListener mListener;
     private BTConnector mConnector;
-    private int mRecievedPackets = 0;
+    private int mPacketCounter;
+    private String mStartTime;
+    private String mElapsedTime;
+    private Date mDate;
+    private String mTransferRate;
 
 
-    public MainViewModel(Activity activity, viewModelListener listener) {
+    private MainViewModel(Activity activity, viewModelListener listener) {
         mActivity = activity;
         mListener = listener;
+    }
+
+    public static MainViewModel getInstance(Activity activity, viewModelListener listener) {
+        if(mInstance == null) {
+            mInstance = new MainViewModel(activity, listener);
+        }
+        return mInstance;
+    }
+
+    public void setActivity(Activity mActivity) {
+        this.mActivity = mActivity;
+    }
+
+    public void setListener(viewModelListener mListener) {
+        this.mListener = mListener;
     }
 
     @Override
@@ -42,12 +73,43 @@ public class MainViewModel extends BaseObservable implements ViewModel {
     }
 
     @Bindable
-    public String getRecievedPackets() {
-        return mRecievedPackets + "";
+    public String getPacketCounter() {
+        return mPacketCounter + "";
     }
 
-    public void setRecievedPackets(String packets) {
-        this.mRecievedPackets = Integer.parseInt(packets);
+    public void setPacketCounter(String packetCounter) {
+        this.mPacketCounter = Integer.parseInt(packetCounter);
+        notifyPropertyChanged(BR.packetCounter);
+    }
+
+    @Bindable
+    public String getStartTime() {
+        return mStartTime;
+    }
+
+    public void setStartTime(String mStartTime) {
+        this.mStartTime = mStartTime;
+        notifyPropertyChanged(BR.startTime);
+    }
+
+    @Bindable
+    public String getElapsedTime() {
+        return mElapsedTime;
+    }
+
+    public void setElapsedTime(String mElapsedTime) {
+        this.mElapsedTime = mElapsedTime;
+        notifyPropertyChanged(BR.elapsedTime);
+    }
+
+    @Bindable
+    public String getTransferRate() {
+        return mTransferRate;
+    }
+
+    public void setTransferRate(String mTransferRate) {
+        this.mTransferRate = mTransferRate;
+        notifyPropertyChanged(BR.transferRate);
     }
 
     public void onDeviceSelected(int position) {
@@ -72,6 +134,7 @@ public class MainViewModel extends BaseObservable implements ViewModel {
     }
 
     public void disConnect() {
+        setPacketCounter("0");
         mConnector.disconnect(new BTConnector.SocketDisConnectListener() {
             @Override
             public void onDisconnectError() {
@@ -93,12 +156,19 @@ public class MainViewModel extends BaseObservable implements ViewModel {
             }
         });
 
-        mConnector.listenToIncomingMessages((buffer, numBytes) -> {
-            parseMessage(buffer, numBytes);
+        mConnector.listenToIncomingMessages((buffer, numBytes, packetsCounter) -> {
+            parseMessage(buffer, numBytes, packetsCounter);
         });
+
+        initializeStartTime();
     }
 
-    private void parseMessage(byte[] buffer, int numBytes) {
+    private void initializeStartTime() {
+        mDate = DateUtil.getCurrentDate();
+        setStartTime(dateToStr(mDate, "HH:mm:ss"));
+    }
+
+    private void parseMessage(byte[] buffer, int numBytes, int packetsCounter) {
         List<Integer> positiveBuffer;
         positiveBuffer = ConvertUtil.bytesToPositive(buffer);
 
@@ -114,6 +184,12 @@ public class MainViewModel extends BaseObservable implements ViewModel {
             switch (message.getmType()) {
                 case LOD:
 //                Log.d(ConstantsUtil.GENERAL_TAG, " message: " + ConvertUtil.decimalToHexString(message));
+                    setPacketCounter(packetsCounter + "");
+                    long diffLong = DateUtil.differenceBetweenDatesLong(mDate, getCurrentDate());
+                    String diffStr = DateUtil.longToStr(diffLong, "mm:ss");
+                    setElapsedTime(diffStr);
+                    double transferRate = (double)mPacketCounter / diffLong * 1000;
+                    setTransferRate(String.format("%.1f", transferRate));
                     mListener.onUpdateUIFromLOD(hex, payload);
                     break;
 
@@ -135,6 +211,7 @@ public class MainViewModel extends BaseObservable implements ViewModel {
                 mListener.onStopError(error);
             }
         });
+        mConnector.clearPacketsCounter();
     }
 
     public void showVersion() {
@@ -147,8 +224,8 @@ public class MainViewModel extends BaseObservable implements ViewModel {
             }
         });
 
-        mConnector.listenToIncomingMessages((buffer, numBytes) -> {
-            parseMessage(buffer, numBytes);
+        mConnector.listenToIncomingMessages((buffer, numBytes, packetsCounter) -> {
+            parseMessage(buffer, numBytes, packetsCounter);
         });
     }
 

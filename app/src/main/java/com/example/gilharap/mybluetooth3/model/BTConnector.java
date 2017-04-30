@@ -27,6 +27,7 @@ public class BTConnector {
     private ArrayList<BluetoothDevice> mPairedDevicesList;
     private BluetoothDevice mSelectedDevice;
     private ConnectingThread mConnectingThread;
+    private int mPacketsCounter = 0;
 
     public BTConnector() {
         mBtAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -143,6 +144,10 @@ public class BTConnector {
         }
     }
 
+    public void clearPacketsCounter() {
+        mPacketsCounter = 0;
+    }
+
 
     private class ConnectingThread extends Thread {
 
@@ -222,14 +227,10 @@ public class BTConnector {
 
         public void run() {
             byte[] buffer = new byte[ConstantsUtil.BUFFER_SIZE];
-
-
-            int numBytes; // mLst returned from read()
+            int numBytes;
 
             // Keep listening to the InputStream until an exception occurs.
             while (true) {
-
-//                Arrays.fill(buffer, (byte)0);
 
                 try {
                     // Read from the InputStream.
@@ -238,8 +239,8 @@ public class BTConnector {
                     Log.d(ConstantsUtil.GENERAL_TAG + " 1", "buffer initial: " + buffer);
                     Log.d(ConstantsUtil.GENERAL_TAG + " 1", "numBytes: " + numBytes);
 
-
-                    mListener.onReceived(buffer, numBytes);
+                    mPacketsCounter ++;
+                    mListener.onReceived(buffer, numBytes, mPacketsCounter);
 
                 } catch (IOException e) {
                     Log.d(ConstantsUtil.GENERAL_TAG, "Input stream was disconnected", e);
@@ -293,6 +294,6 @@ public class BTConnector {
     }
 
     public interface MessageReceivedListener {
-        void onReceived(byte[] mBuffer, int numBytes);
+        void onReceived(byte[] mBuffer, int numBytes, int packetsCounter);
     }
 }

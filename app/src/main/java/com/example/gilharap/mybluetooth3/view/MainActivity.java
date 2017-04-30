@@ -34,7 +34,10 @@ public class MainActivity extends AppCompatActivity implements DevicesFragment.O
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
-        mMainViewModel = new MainViewModel(this, new viewModelListen());
+        mMainViewModel = MainViewModel.getInstance(this, new viewModelListen());
+        // MainViewModel is singelton and getInstance may not create ne instance with current params
+        mMainViewModel.setActivity(this);
+        mMainViewModel.setListener(new viewModelListen());
 
         mFragmentSwapper = FragmentSwapper.getInstance(getSupportFragmentManager());
 //        mConnectFragment = ConnectFragment.newInstance();
@@ -112,7 +115,6 @@ public class MainActivity extends AppCompatActivity implements DevicesFragment.O
         public void onConnectionError() {
             String message = "connection failed";
             ToastOnUIThread(message);
-            mMainViewModel.showVersion();
 
             runOnUiThread(new Runnable() {
                 @Override
