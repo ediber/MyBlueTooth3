@@ -265,7 +265,7 @@ public class ConnectFragment extends Fragment {
 
         void onDisConnect();
 
-        void onStartRequest(int selectedItemPosition, int selectedItemPosition1);
+        void onStartRequest(int selectedLevel, int selectedCurrent);
 
         void onStopRequest();
     }
