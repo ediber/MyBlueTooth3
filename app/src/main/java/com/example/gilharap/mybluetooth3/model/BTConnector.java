@@ -68,7 +68,9 @@ public class BTConnector {
 
     public void disconnect(SocketDisConnectListener listener) {
 //        new DisconnectingThread(mSocket, listener).start();
-        mConnectingThread.cancel();
+        if (mConnectingThread != null) {
+            mConnectingThread.cancel();
+        }
     }
 
     public void send(SendMessage sendMessage, MessageSentListener listener) {
@@ -127,7 +129,9 @@ public class BTConnector {
 
         OutputStream outStream = null;
         try {
-            outStream = mSocket.getOutputStream();
+            if (mSocket != null) {
+                outStream = mSocket.getOutputStream();
+            }
         } catch (IOException e) {
             listener.onError("Error occurred when creating output stream");
             Log.e("tag", "Error occurred when creating output stream", e);
@@ -239,7 +243,7 @@ public class BTConnector {
                     Log.d(ConstantsUtil.GENERAL_TAG + " 1", "buffer initial: " + buffer);
                     Log.d(ConstantsUtil.GENERAL_TAG + " 1", "numBytes: " + numBytes);
 
-                    mPacketsCounter ++;
+                    mPacketsCounter++;
                     mListener.onReceived(buffer, numBytes, mPacketsCounter);
 
                 } catch (IOException e) {
