@@ -23,6 +23,7 @@ import butterknife.ButterKnife;
 public class DevicesFragment extends Fragment {
 
     public static final String NAMES = "mNames";
+    public static final String MACS = "macs";
     private OnFragmentInteractionListener mListener;
 
     @BindView(R.id.devicesRecycler)
@@ -30,6 +31,7 @@ public class DevicesFragment extends Fragment {
 
     private PairedAdapter mAdapter;
     private String[] mNames;
+    private String[] mMacs;
 
     public DevicesFragment() {
         // Required empty public constructor
@@ -45,6 +47,7 @@ public class DevicesFragment extends Fragment {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mNames = getArguments().getStringArray(NAMES);
+            mMacs = getArguments().getStringArray(MACS);
         }
     }
 
@@ -57,12 +60,14 @@ public class DevicesFragment extends Fragment {
 
 
         ArrayList<String> namesList = new ArrayList<>(Arrays.asList(mNames));
+        ArrayList<String> macsList = new ArrayList<>(Arrays.asList(mMacs));
+
 
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         DividerItemDecoration dividerItemDecoration = new DividerItemDecoration(recycler.getContext(), linearLayoutManager.getOrientation());
         recycler.addItemDecoration(dividerItemDecoration);
         recycler.setLayoutManager(linearLayoutManager);
-        mAdapter = new PairedAdapter(namesList, new SelectListen());
+        mAdapter = new PairedAdapter(namesList, macsList, new SelectListen());
         recycler.setAdapter(mAdapter);
 
         return view;

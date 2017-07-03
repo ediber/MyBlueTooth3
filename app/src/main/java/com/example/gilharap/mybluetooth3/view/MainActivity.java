@@ -79,9 +79,10 @@ public class MainActivity extends AppCompatActivity implements DevicesFragment.O
     private class viewModelListen implements MainViewModel.viewModelListener {
 
         @Override
-        public void onShowPairedDevices(List<String> deviceNames) {
+        public void onShowPairedDevices(List<String> deviceNames, List<String> deviceMacs) {
             Bundle bundle = new Bundle();
             bundle.putStringArray(DevicesFragment.NAMES, deviceNames.toArray(new String[0]));
+            bundle.putStringArray(DevicesFragment.MACS, deviceMacs.toArray(new String[0]));
             mFragmentSwapper.swapToFragment(DevicesFragment.class, bundle, R.id.frame, false, true);
         }
 

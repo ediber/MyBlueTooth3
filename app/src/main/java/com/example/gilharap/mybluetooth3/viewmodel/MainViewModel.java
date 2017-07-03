@@ -243,7 +243,7 @@ public class MainViewModel extends BaseObservable implements ViewModel {
 
 
     public interface viewModelListener {
-        void onShowPairedDevices(List<String> deviceNames);
+        void onShowPairedDevices(List<String> deviceNames, List<String> deviceMacs);
 
         void showDeviceDetails(String deviceName);
 

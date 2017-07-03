@@ -6,6 +6,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import butterknife.BindView;
@@ -22,10 +23,12 @@ public class PairedAdapter extends RecyclerView.Adapter<PairedAdapter.CustomView
 
 
     private List<String> mDevices;
+    private ArrayList<String> mMacs;
     private SelectListener mListener;
 
-    public PairedAdapter(List<String> mDevices, SelectListener selectListener) {
+    public PairedAdapter(List<String> mDevices, ArrayList<String> macsList, SelectListener selectListener) {
         this.mDevices = mDevices;
+        this.mMacs = macsList;
         this.mListener = selectListener;
     }
 
@@ -38,8 +41,10 @@ public class PairedAdapter extends RecyclerView.Adapter<PairedAdapter.CustomView
 
     @Override
     public void onBindViewHolder(CustomViewHolder holder, int position) {
-        final String device = mDevices.get(position);
-        holder.mName.setText(device);
+         String deviceName = mDevices.get(position);
+         String deviceMac = mMacs.get(position);
+        holder.mName.setText(deviceName);
+        holder.mMac.setText(deviceMac);
         holder.mConnect.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -56,6 +61,7 @@ public class PairedAdapter extends RecyclerView.Adapter<PairedAdapter.CustomView
     public class CustomViewHolder extends RecyclerView.ViewHolder {
 //        protected TextView name;
         @BindView(R.id.name) TextView mName;
+        @BindView(R.id.mac) TextView mMac;
         @BindView(R.id.select) View mConnect;
 
         public CustomViewHolder(View view) {

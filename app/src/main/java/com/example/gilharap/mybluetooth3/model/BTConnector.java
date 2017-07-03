@@ -81,21 +81,33 @@ public class BTConnector {
         new AlreadyConnectedThread(mSocket, listener).start();
     }
 
-    private List<String> showPairedDevices(MainViewModel.viewModelListener listener) {
+    private List<String> showPairedDevicesNames(MainViewModel.viewModelListener listener) {
         Set<BluetoothDevice> pairedDevices = mBtAdapter.getBondedDevices();
         mPairedDevicesList = new ArrayList<>(pairedDevices);
-
         List<String> deviceNames = devicesToNames(mPairedDevicesList);
-        // TODO do it with RXjava
 
         return deviceNames;
     }
 
+    private List<String> showPairedDevicesMacs(MainViewModel.viewModelListener listener) {
+        Set<BluetoothDevice> pairedDevices = mBtAdapter.getBondedDevices();
+        mPairedDevicesList = new ArrayList<>(pairedDevices);
+        List<String> deviceMacs = devicesToMac(mPairedDevicesList);
+
+        return deviceMacs;
+    }
+
+    private List<String> devicesToMac(ArrayList<BluetoothDevice> pairedDevicesList) {
+        List<String> macs = new ArrayList<>();
+
+        for (BluetoothDevice device : pairedDevicesList) {
+            macs.add(device.getAddress());
+        }
+        return macs;
+    }
+
     private List<String> devicesToNames(List<BluetoothDevice> pairedDevicesList) {
         List<String> names = new ArrayList<>();
-
-        // to add on min api 24
-//                List<String> names = mPairedDevicesList.stream().map(BluetoothDevice::getName).collect(Collectors.toList());
 
         for (BluetoothDevice device : pairedDevicesList) {
             names.add(device.getName());
@@ -111,8 +123,10 @@ public class BTConnector {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
             activity.startActivityForResult(enableBtIntent, 1);
         } else {
-            List<String> deviceNames = showPairedDevices(listener);
-            listener.onShowPairedDevices(deviceNames);
+            List<String> deviceNames = showPairedDevicesNames(listener);
+            List<String> deviceMacs = showPairedDevicesMacs(listener);
+
+            listener.onShowPairedDevices(deviceNames, deviceMacs);
         }
     }
 

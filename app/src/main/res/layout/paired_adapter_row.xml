@@ -9,6 +9,16 @@
     android:paddingBottom="20dp">
 
     <TextView
+        android:id="@+id/mac"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="72dp"
+        android:text="TextView"
+        app:layout_constraintLeft_toRightOf="@+id/name"
+        app:layout_constraintTop_toTopOf="@+id/name"
+        android:layout_marginTop="0dp" />
+
+    <TextView
         android:id="@+id/name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
